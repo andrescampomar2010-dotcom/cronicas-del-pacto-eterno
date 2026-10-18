@@ -1,5 +1,7 @@
 # Crónicas del Pacto Eterno
 
+[![Demo](https://img.shields.io/badge/demo-live-2ea44f?style=flat-square)](https://andrescampomar2010-dotcom.github.io/cronicas-del-pacto-eterno/) [![Licencia](https://img.shields.io/badge/licencia-todos%20los%20derechos%20reservados-6b7280?style=flat-square)](#licencia)
+
 Juego de mesa de estrategia (4-6 jugadores, 60-90 min) ambientado en el Cercano Oriente antiguo, con **prototipo digital jugable** de un solo archivo HTML: funciona en el navegador, sin instalar nada, con oponentes IA y modo hotseat.
 
 ## Jugar ahora
