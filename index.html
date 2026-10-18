@@ -1,0 +1,1692 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#2a2012">
+<title>Crónicas del Pacto Eterno — Prototipo v5.0</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--gold:#C9A84C;--gold2:#8B6914;--dark:#2a2012;--dark2:#1c1408;--parch:#f3ead2;--parch2:#e7dcc0;--crim:#8B1A1A;--ink:#241b0e;}
+html,body{height:100%;overflow:hidden;font-family:Georgia,serif;background:var(--dark2);color:var(--ink);}
+body{display:flex;flex-direction:column;max-width:600px;margin:0 auto;position:relative;}
+.hidden{display:none!important;}
+#topbar{background:var(--dark);color:var(--gold);padding:7px 10px;flex:0 0 auto;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:20;}
+#turnrow{display:flex;align-items:center;gap:8px;}
+#facdot{width:24px;height:24px;border-radius:50%;border:2px solid #fff;flex:0 0 auto;}
+#facname{font-weight:bold;font-size:15px;letter-spacing:1px;font-family:Cinzel,Georgia,serif;}
+#roundinfo{margin-left:auto;font-size:11px;text-align:right;color:#E8D5A3;line-height:1.3;}
+#resbar{display:flex;gap:5px;margin-top:6px;}
+.res{flex:1;background:var(--dark2);border-radius:6px;padding:3px 2px;text-align:center;border:1px solid var(--gold2);}
+.res .v{font-size:15px;font-weight:bold;color:#fff;font-family:Cinzel,serif;}
+.res .l{font-size:7.5px;color:var(--gold);letter-spacing:.4px;text-transform:uppercase;}
+#actrow{display:flex;align-items:center;gap:6px;margin-top:6px;}
+.actdot{width:12px;height:12px;border-radius:50%;background:#444;border:1px solid var(--gold);}
+.actdot.on{background:var(--gold);box-shadow:0 0 6px var(--gold);}
+#actlabel{font-size:10px;color:#E8D5A3;}
+#elias-mini{margin-left:auto;font-size:10px;background:var(--crim);color:#fff;padding:2px 8px;border-radius:10px;font-weight:bold;}
+#boardwrap{flex:1 1 auto;overflow:hidden;position:relative;background:radial-gradient(circle at 28% 16%,#3a5a7a 0%,#cdbb8c 16%);touch-action:none;}
+#boardsvg{display:block;}
+.hex{cursor:pointer;}
+.hexsel{stroke:#fff!important;stroke-width:4px!important;filter:drop-shadow(0 0 6px #fff);}
+.hexmove{stroke:#3DDC84!important;stroke-width:3.5px!important;}
+.hexatk{stroke:#FF5252!important;stroke-width:3.5px!important;}
+.hexpick{stroke:#C9A84C!important;stroke-width:3.5px!important;filter:drop-shadow(0 0 4px #C9A84C);}
+.hlabel{font-family:Cinzel,Georgia,serif;pointer-events:none;}
+#sheet{flex:0 0 auto;background:var(--parch);border-top:3px solid var(--gold2);max-height:48vh;overflow-y:auto;z-index:15;box-shadow:0 -3px 12px rgba(0,0,0,.3);}
+#sheethead{padding:7px 12px;background:var(--parch2);border-bottom:1px solid #cdbb8c;position:sticky;top:0;font-family:Cinzel,serif;font-size:13px;color:var(--gold2);font-weight:bold;}
+#sheetbody{padding:8px 12px 14px;}
+.selinfo{background:var(--parch2);border:1px solid #cdbb8c;border-radius:7px;padding:6px 9px;margin-bottom:8px;font-size:12.5px;}
+.tilewrap{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.tile{background:var(--dark);color:#fff;border:1px solid var(--gold2);border-radius:9px;padding:8px 4px;text-align:center;font-size:11px;font-family:Cinzel,serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:56px;justify-content:center;}
+.tile:active{background:var(--gold2);}
+.tile.dis{opacity:.35;pointer-events:none;}
+.tile .ico{font-size:18px;line-height:1;}
+.tile .cost{font-size:8px;color:var(--gold);}
+.bigbtn{display:block;width:100%;background:var(--crim);color:#fff;border:none;border-radius:9px;padding:13px;font-size:15px;font-family:Cinzel,serif;font-weight:bold;letter-spacing:1px;cursor:pointer;margin-top:6px;}
+.bigbtn:active{background:#a52020;} .bigbtn.gold{background:var(--gold2);} .bigbtn.gold:active{background:var(--gold);}
+.ghostbtn{display:block;width:100%;background:transparent;color:var(--gold2);border:1.5px solid var(--gold2);border-radius:9px;padding:10px;font-size:13px;font-family:Cinzel,serif;cursor:pointer;margin-top:6px;}
+.infoline{font-size:12.5px;margin:3px 0;line-height:1.45;}
+.flav{font-style:italic;color:#6b4e08;font-size:11.5px;}
+.pill{display:inline-block;background:var(--dark);color:var(--gold);border-radius:9px;padding:1px 8px;font-size:10px;margin:2px 3px 0 0;}
+.pill.r{background:var(--crim);color:#fff;}
+#log{position:absolute;left:0;right:0;bottom:0;max-height:0;overflow:hidden;background:rgba(28,20,8,.97);color:#E8D5A3;transition:max-height .25s;z-index:18;border-top:2px solid var(--gold);}
+#log.open{max-height:52vh;overflow-y:auto;}
+#log .e{padding:6px 12px;border-bottom:1px solid rgba(201,168,76,.18);font-size:12px;line-height:1.4;}
+#log .e b{color:var(--gold);}
+#fablog{position:absolute;right:10px;bottom:calc(48vh + 8px);z-index:16;background:var(--dark);color:var(--gold);border:1.5px solid var(--gold);border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+#modal{position:fixed;inset:0;background:rgba(20,14,6,.78);z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;}
+.card{background:var(--parch);border-radius:14px;max-width:430px;width:100%;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.6);max-height:90vh;display:flex;flex-direction:column;}
+.card .ch{padding:11px 16px;color:#fff;}
+.card .ch h3{font-family:Cinzel,serif;font-size:17px;letter-spacing:.5px;}
+.card .ch .sub{font-size:11px;opacity:.9;font-style:italic;}
+.card .cb{padding:13px 16px;overflow-y:auto;}
+.card.mil .ch{background:linear-gradient(90deg,#1c5a3a,#3E7C47);}
+.card.pla .ch{background:linear-gradient(90deg,#6e1414,#8B1A1A);}
+.card.gold .ch{background:linear-gradient(90deg,#8B6914,#C9A84C);}
+.card.combat .ch{background:linear-gradient(90deg,#3a2f5c,#5B4FA0);}
+.optbtn{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid #cdbb8c;border-radius:9px;padding:10px 13px;margin:6px 0;font-size:12.5px;cursor:pointer;font-family:Georgia,serif;}
+.optbtn:active{background:var(--parch2);} .optbtn.optdis{opacity:.4;}
+.optbtn b{font-family:Cinzel,serif;}
+.statline{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px dotted #cdbb8c;}
+.vs{text-align:center;font-family:Cinzel,serif;font-size:24px;color:var(--crim);margin:8px 0;}
+#setup,#winner{position:fixed;inset:0;background:var(--dark2);z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;text-align:center;color:var(--parch);overflow-y:auto;}
+#setup h1,#winner h1{font-family:Cinzel,serif;color:var(--gold);font-size:24px;margin-bottom:6px;letter-spacing:1px;}
+#setup .sub{font-style:italic;color:#C9A84C;font-size:13px;margin-bottom:18px;}
+.pcountrow{display:flex;gap:8px;margin:8px 0 14px;}
+.pcount{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold2);background:var(--dark);color:var(--gold);font-size:17px;font-family:Cinzel,serif;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.pcount.sel{background:var(--gold);color:var(--dark);border-color:#fff;}
+.tag{font-size:9px;background:var(--gold2);color:#fff;padding:1px 6px;border-radius:8px;font-family:Cinzel,serif;}
+.modebtn{flex:1;padding:9px 6px;border:1.5px solid var(--gold2);border-radius:9px;color:var(--gold);font-family:Cinzel,serif;font-size:11.5px;cursor:pointer;background:var(--dark);}
+.modebtn.sel{background:var(--gold);color:var(--dark);border-color:#fff;}
+#moderow{display:flex;gap:8px;width:100%;max-width:340px;margin:6px 0 10px;}
+#facrow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:360px;margin:6px 0 12px;}
+.facbtn{border:2px solid;border-radius:9px;padding:6px 4px;background:var(--dark);color:#fff;font-family:Cinzel,serif;font-size:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.7;}
+.facbtn span{width:14px;height:14px;border-radius:50%;display:inline-block;}
+.facbtn small{font-family:Georgia,serif;font-size:8.5px;color:#cdbb8c;font-style:italic;}
+.facbtn.sel{opacity:1;box-shadow:0 0 10px rgba(201,168,76,.7);background:#3a2c14;}
+.tag.ok{background:#3E7C47;} .tag.lock{background:#6b6b6b;} .tag.usado{background:#8B1A1A;}
+.tile.hot{box-shadow:0 0 8px rgba(201,168,76,.8);border-color:var(--gold);}
+.calcbox{background:#fbf5e4;border:1px solid #cdbb8c;border-radius:8px;padding:7px 9px;margin:8px 0;}
+.calc{font-size:12.5px;line-height:1.45;padding:2px 0;}
+.mvstep{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0;font-size:13.5px;}
+.stepbtn{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--gold2);background:#fff;font-size:22px;font-weight:700;color:var(--crim);cursor:pointer;}
+#resumebox{margin:6px 0 4px;max-width:300px;width:100%;}
+#resumebox .flav{color:#cdbb8c;font-size:11px;margin-top:2px;}
+</style></head><body>
+<div id="setup">
+  <h1>Crónicas del Pacto Eterno</h1>
+  <div class="sub">Prototipo jugable · v5.0 · mapa nuevo</div>
+  <div style="font-size:12.5px;color:#E8D5A3;max-width:360px;line-height:1.5;">
+    Seis naciones del mundo antiguo. El <b>Arca</b> en el centro. <b>Elías</b> camina hacia el Horeb y cada ronda la <b>Voz</b> trae un Milagro o una Plaga.
+    Cada pueblo juega distinto: mecánica única, identidad de victoria, tres <b>Decretos</b> y sus héroes.
+  </div>
+  <div style="margin-top:14px;font-size:12px;color:var(--gold);">Modo de juego</div>
+  <div id="moderow"></div>
+  <div id="facpick"><div style="font-size:12px;color:var(--gold);">Elige tu pueblo</div><div id="facrow"></div></div>
+  <div style="font-size:12px;color:var(--gold);">Jugadores</div>
+  <div class="pcountrow" id="pcountrow"></div>
+  <div id="resumebox" style="display:none"></div>
+  <button class="bigbtn gold" style="max-width:260px;" onclick="startGame()">COMENZAR PARTIDA</button>
+  <button class="ghostbtn" style="max-width:260px;" onclick="openPlaytest()">⚙ Auto-playtest (medir balance)</button>
+  <div style="margin-top:10px;font-size:10px;color:#8a7a4a;max-width:330px;">Con 4-5 jugadores, las regiones sin dueño quedan en manos de los pueblos de Canaán (guarniciones neutrales).</div>
+</div>
+
+<div id="topbar" class="hidden">
+  <div id="turnrow"><div id="facdot"></div><div id="facname">—</div><div id="roundinfo"></div></div>
+  <div id="resbar">
+    <div class="res"><div class="v" id="r-rec">0</div><div class="l">Recursos</div></div>
+    <div class="res"><div class="v" id="r-fe">0</div><div class="l">Fe</div></div>
+    <div class="res"><div class="v" id="r-con">0</div><div class="l">Conoc.</div></div>
+    <div class="res"><div class="v" id="r-pv">0</div><div class="l">PV</div></div>
+  </div>
+  <div id="actrow"><span id="actlabel">Acciones:</span>
+    <div class="actdot" id="ad0"></div><div class="actdot" id="ad1"></div><div class="actdot" id="ad2"></div>
+    <div id="elias-mini">Elías 0</div></div>
+</div>
+
+<div id="boardwrap" class="hidden"><svg id="boardsvg"></svg></div>
+<button id="fablog" class="hidden" onclick="toggleLog()">☰</button>
+<div id="sheet" class="hidden"><div id="sheethead"><span id="sheettitle">—</span></div><div id="sheetbody"></div></div>
+<div id="log"></div>
+<div id="modal" class="hidden"></div>
+
+<div id="winner" class="hidden">
+  <h1 id="wintitle">—</h1>
+  <div id="winbody" style="font-size:13px;color:#E8D5A3;margin-top:10px;line-height:1.6;max-width:400px;"></div>
+  <button class="bigbtn gold" style="max-width:240px;margin-top:20px;" onclick="newGamePrompt()">NUEVA PARTIDA</button>
+</div>
+<script>
+const BOARD={"hexes":[{"q":0,"r":0,"x":295,"y":263,"region":"S","terr":"fertil","name":"","capital":false,"holy":null,"ark":true},{"q":1,"r":0,"x":374.7,"y":263,"region":"S","terr":"desierto","name":"","capital":false,"holy":"Betel","ark":false},{"q":1,"r":-1,"x":334.9,"y":194,"region":"S","terr":"desierto","name":"","capital":false,"holy":null,"ark":false},{"q":0,"r":-1,"x":255.2,"y":194,"region":"S","terr":"fertil","name":"","capital":false,"holy":"Jerusalén","ark":false},{"q":-1,"r":0,"x":215.3,"y":263,"region":"S","terr":"fertil","name":"","capital":false,"holy":"Silo","ark":false},{"q":-1,"r":1,"x":255.2,"y":332,"region":"S","terr":"desierto","name":"","capital":false,"holy":null,"ark":false},{"q":0,"r":1,"x":334.9,"y":332,"region":"S","terr":"fertil","name":"","capital":false,"holy":"Siquem","ark":false},{"q":2,"r":0,"x":454.4,"y":263,"region":1,"terr":"fertil","name":"Gosén","capital":false,"holy":null,"ark":false},{"q":2,"r":-1,"x":414.5,"y":194,"region":1,"terr":"fertil","name":"Tanis","capital":false,"holy":null,"ark":false},{"q":3,"r":0,"x":534,"y":263,"region":1,"terr":"fertil","name":"Pi-Ramsés","capital":false,"holy":null,"ark":false},{"q":3,"r":-1,"x":494.2,"y":194,"region":1,"terr":"llano","name":"Menfis","capital":true,"holy":null,"ark":false},{"q":3,"r":-2,"x":454.4,"y":125,"region":1,"terr":"desierto","name":"Sais","capital":false,"holy":null,"ark":false},{"q":2,"r":-2,"x":374.7,"y":125,"region":0,"terr":"desierto","name":"Gilgal","capital":false,"holy":null,"ark":false},{"q":1,"r":-2,"x":295,"y":125,"region":0,"terr":"desierto","name":"Dan","capital":false,"holy":null,"ark":false},{"q":3,"r":-3,"x":414.5,"y":56,"region":0,"terr":"fertil","name":"Hebrón","capital":false,"holy":null,"ark":false},{"q":2,"r":-3,"x":334.9,"y":56,"region":0,"terr":"fertil","name":"Samaria","capital":true,"holy":null,"ark":false},{"q":1,"r":-3,"x":255.2,"y":56,"region":0,"terr":"montana","name":"Bersabé","capital":false,"holy":null,"ark":false},{"q":0,"r":-2,"x":215.3,"y":125,"region":4,"terr":"desierto","name":"Asdod","capital":false,"holy":null,"ark":false},{"q":-1,"r":-1,"x":175.5,"y":194,"region":4,"terr":"fertil","name":"Sicelag","capital":false,"holy":null,"ark":false},{"q":0,"r":-3,"x":175.5,"y":56,"region":4,"terr":"fertil","name":"Ascalón","capital":false,"holy":null,"ark":false},{"q":-1,"r":-2,"x":135.7,"y":125,"region":4,"terr":"llano","name":"Gat","capital":true,"holy":null,"ark":false},{"q":-2,"r":-1,"x":95.8,"y":194,"region":4,"terr":"montana","name":"Ecrón","capital":false,"holy":null,"ark":false},{"q":-2,"r":0,"x":135.7,"y":263,"region":3,"terr":"llano","name":"Harán","capital":false,"holy":null,"ark":false},{"q":-2,"r":1,"x":175.5,"y":332,"region":3,"terr":"fertil","name":"Asur","capital":false,"holy":null,"ark":false},{"q":-3,"r":0,"x":56,"y":263,"region":3,"terr":"fertil","name":"Nimrud","capital":false,"holy":null,"ark":false},{"q":-3,"r":1,"x":95.8,"y":332,"region":3,"terr":"fertil","name":"Nínive","capital":true,"holy":null,"ark":false},{"q":-3,"r":2,"x":135.7,"y":401,"region":3,"terr":"montana","name":"Resén","capital":false,"holy":null,"ark":false},{"q":-2,"r":2,"x":215.3,"y":401,"region":2,"terr":"desierto","name":"Borsippa","capital":false,"holy":null,"ark":false},{"q":-1,"r":2,"x":295,"y":401,"region":2,"terr":"fertil","name":"Kish","capital":false,"holy":null,"ark":false},{"q":-3,"r":3,"x":175.5,"y":470,"region":2,"terr":"montana","name":"Ur","capital":false,"holy":null,"ark":false},{"q":-2,"r":3,"x":255.2,"y":470,"region":2,"terr":"fertil","name":"Babilonia","capital":true,"holy":null,"ark":false},{"q":-1,"r":3,"x":334.9,"y":470,"region":2,"terr":"llano","name":"Mari","capital":false,"holy":null,"ark":false},{"q":0,"r":2,"x":374.7,"y":401,"region":5,"terr":"desierto","name":"Pasargada","capital":false,"holy":null,"ark":false},{"q":1,"r":1,"x":414.5,"y":332,"region":5,"terr":"montana","name":"Ecbatana","capital":false,"holy":null,"ark":false},{"q":0,"r":3,"x":414.5,"y":470,"region":5,"terr":"fertil","name":"Media","capital":false,"holy":null,"ark":false},{"q":1,"r":2,"x":454.4,"y":401,"region":5,"terr":"llano","name":"Susa","capital":true,"holy":null,"ark":false},{"q":2,"r":1,"x":494.2,"y":332,"region":5,"terr":"fertil","name":"Persépolis","capital":false,"holy":null,"ark":false}],"size":46,"factions":[{"name":"ISRAEL","color":"#2F5C9E","capital":"Samaria","res":{"rec":4,"fe":7,"con":3},"power":"+1 Fe por cada Lugar Sagrado que controles. Una vez por ronda, Demorar a Elías (−1) GRATIS."},{"name":"EGIPTO","color":"#1F9E8C","capital":"Menfis","res":{"rec":7,"fe":2,"con":5},"power":"+1 Recurso extra en cada territorio fértil. Inmune a la Plaga de Sequía. Puedes tener 3 Maravillas."},{"name":"BABILONIA","color":"#5B4FA0","capital":"Babilonia","res":{"rec":5,"fe":3,"con":6},"power":"Ves la carta superior de la Voz ANTES de que se modifique a Elías. Profecías más baratas."},{"name":"ASIRIA","color":"#A8392A","capital":"Nínive","res":{"rec":8,"fe":1,"con":5},"power":"Reclutar te cuesta 1 Recurso menos. Al conquistar un territorio robas +1 recurso extra (saqueo)."},{"name":"FILISTEA","color":"#5E8C5A","capital":"Gat","res":{"rec":6,"fe":4,"con":4},"power":"Movimiento naval libre entre costas. +1 Fuerza defendiendo. Hierro: +1 Fuerza a toda tu infantería."},{"name":"PERSIA","color":"#C77B30","capital":"Susa","res":{"rec":6,"fe":3,"con":5},"power":"Tolerancia: usas reliquias ajenas conquistadas sin penalización. Ignoras la primera Plaga de cada banda."}],"corners":[[3,-3],[0,-3],[-3,0],[-3,3],[0,3],[3,0]]};
+const D={"voz":[{"n":"Maná del Desierto","k":"mil","ref":"Éx 16","tgt":"min_rec","eco":1,"fx":[{"t":"res","r":"rec","v":2,"sc":true}],"txt":"El jugador con menos Recursos gana 2 Rec × banda.","flav":"Pan del cielo: puntual cada mañana y sin repartidor."},{"n":"Las Codornices","k":"mil","ref":"Núm 11","tgt":"all","eco":1,"fx":[{"t":"perterr","terr":"desierto","r":"rec","v":1,"max":4}],"txt":"Cada jugador gana 1 Rec por cada desierto que controle (máx. 4).","flav":"El viento trajo la cena. Nadie preguntó el precio."},{"n":"Agua de la Roca","k":"mil","ref":"Éx 17","tgt":"all","eco":2,"fx":[{"t":"res","r":"fe","v":1,"sc":false}],"txt":"Cada jugador gana 1 Fe.","flav":"Moisés golpeó la roca y la roca no protestó."},{"n":"El Año del Jubileo","k":"mil","ref":"Lv 25","tgt":"max_rec","eco":1,"fx":[{"t":"xfer","r":"rec","v":2,"sc":true,"to":"min_rec"}],"txt":"El jugador con más Recursos entrega 2 Rec × banda al que tenga menos.","flav":"El gran reparto: unos lloran y otros bailan."},{"n":"Los Huesos Secos","k":"mil","ref":"Ez 37","tgt":"min_army","eco":2,"fx":[{"t":"units","v":2,"sc":true}],"txt":"El ejército más pequeño gana 2 unidades × banda en su capital.","flav":"El ejército esqueleto vuelve al servicio."},{"n":"La Zarza Ardiente","k":"mil","ref":"Éx 3","tgt":"min_fe","eco":1,"fx":[{"t":"res","r":"fe","v":3,"sc":true}],"txt":"El jugador con menos Fe gana 3 Fe × banda.","flav":"Arde y no se gasta: la zarza más eficiente de la historia."},{"n":"El Fuego del Sacrificio","k":"mil","ref":"Lv 9","tgt":"max_holy","eco":2,"fx":[{"t":"pv","v":3}],"txt":"Quien controle más Templos y Ciudades Santas gana 3 PV.","flav":"Respuesta del cielo, con fuego incluido."},{"n":"Los Sueños de José","k":"mil","ref":"Gén 41","tgt":"min_terr","eco":1,"fx":[{"t":"tac","n":2}],"txt":"El jugador con menos territorios roba 2 Tácticas.","flav":"El que interpreta sueños siempre acaba en el palacio."},{"n":"La Escalera de Jacob","k":"mil","ref":"Gén 28","tgt":"min_holy","eco":2,"fx":[{"t":"res","r":"fe","v":2,"sc":true}],"txt":"Quien controle menos Templos y Ciudades Santas gana 2 Fe × banda.","flav":"Jacob acampó en el sitio justo sin saberlo."},{"n":"El Vellón de Gedeón","k":"mil","ref":"Jue 6","tgt":"min_army","eco":1,"fx":[{"t":"pv","v":1},{"t":"res","r":"con","v":2,"sc":false}],"txt":"El ejército más pequeño gana 1 PV y 2 Con.","flav":"Gedeón pidió una señal. Le mandaron dos."},{"n":"La Sabiduría de Salomón","k":"mil","ref":"1 Re 3","tgt":"min_con","eco":1,"fx":[{"t":"res","r":"con","v":2,"sc":true}],"txt":"El jugador con menos Conocimiento gana 2 Con × banda.","flav":"Salomón pidió entendimiento y le salieron las cuentas."},{"n":"El Ángel Acampa","k":"mil","ref":"Sal 34","tgt":"min_terr","eco":1,"fx":[{"t":"units","v":2,"sc":true}],"txt":"El jugador con menos territorios gana 2 unidades × banda en su capital.","flav":"La mejor guardia de seguridad jamás contratada."},{"n":"La Columna de Fuego","k":"mil","ref":"Éx 13","tgt":"last","eco":2,"fx":[{"t":"res","r":"rec","v":2,"sc":false},{"t":"res","r":"fe","v":2,"sc":false}],"txt":"El jugador con menos PV gana 2 Rec y 2 Fe.","flav":"El primer GPS de la historia: edición nocturna."},{"n":"La Viuda de Sarepta","k":"mil","ref":"1 Re 17","tgt":"min_rec","eco":1,"fx":[{"t":"perterr","terr":"any","r":"rec","v":1,"max":6}],"txt":"El jugador con menos Recursos gana 1 Rec por territorio que controle (máx. 6).","flav":"La tinaja que no se vacía ni por las buenas."},{"n":"El Arco Iris del Pacto","k":"mil","ref":"Gén 9","tgt":"all","eco":2,"fx":[{"t":"units","v":1,"sc":false}],"txt":"Cada jugador gana 1 unidad en su capital.","flav":"Señal de paz colgada en el cielo, permanentemente."},{"n":"Sequía del Néguev","k":"pla","ref":"1 Re 17","tgt":"max_rec","eco":1,"fx":[{"t":"res","r":"rec","v":-2,"sc":true}],"txt":"El jugador con más Recursos pierde 2 Rec × banda. Egipto es inmune.","flav":"El paraguas se jubila por falta de trabajo."},{"n":"El Becerro de Oro","k":"pla","ref":"Éx 32","tgt":"max_rec","eco":2,"fx":[{"t":"res","r":"fe","v":-2,"sc":true}],"txt":"El jugador con más Recursos pierde 2 Fe × banda.","flav":"La peor inversión de la historia del Éxodo."},{"n":"Granizo de Fuego","k":"pla","ref":"Éx 9","tgt":"all","eco":2,"fx":[{"t":"terrloss","terr":"llano","v":1,"max":3}],"txt":"Cada jugador pierde 1 unidad en hasta 3 territorios de llano (nunca por debajo de 1).","flav":"El parte meteorológico no avisó de esto."},{"n":"La Langosta","k":"pla","ref":"Éx 10","tgt":"all","eco":1,"fx":[{"t":"perterr","terr":"fertil","r":"rec","v":-1,"max":4}],"txt":"Cada jugador pierde 1 Rec por cada territorio fértil que controle (máx. 4). Egipto es inmune.","flav":"Menú del día: todo lo verde."},{"n":"Las Tinieblas","k":"pla","ref":"Éx 10","tgt":"max_con","eco":2,"fx":[{"t":"half","r":"con"}],"txt":"El jugador con más Conocimiento pierde la mitad (redondeo abajo).","flav":"Apagón total: busquen las velas."},{"n":"El Ángel Exterminador","k":"pla","ref":"Éx 12","tgt":"max_army","eco":2,"fx":[{"t":"units","v":-2,"sc":true}],"txt":"El mayor ejército pierde 2 unidades × banda de su territorio más poblado.","flav":"La noche más larga del calendario."},{"n":"La Plaga de Ranas","k":"pla","ref":"Éx 8","tgt":"max_terr","eco":1,"fx":[{"t":"discard"}],"txt":"El jugador con más territorios descarta todas sus Tácticas.","flav":"Croaban hasta en la despensa."},{"n":"Serpientes de Fuego","k":"pla","ref":"Núm 21","tgt":"min_fe","eco":1,"fx":[{"t":"units","v":-2,"sc":true}],"txt":"El jugador con menos Fe pierde 2 unidades × banda.","flav":"Camine mirando al suelo, por favor."},{"n":"Las Úlceras","k":"pla","ref":"Éx 9","tgt":"max_army","eco":1,"fx":[{"t":"spread","v":1,"n":3}],"txt":"El mayor ejército pierde 1 unidad en cada uno de sus 3 territorios más poblados.","flav":"Ni el mejor médico de Egipto encontró la cura."},{"n":"Fuego sobre Sodoma","k":"pla","ref":"Gén 19","tgt":"leader","eco":2,"fx":[{"t":"pv","v":-2}],"txt":"El jugador con más PV pierde 2 PV.","flav":"Sodoma no ganaba premios de buen vecino."},{"n":"La Soberbia de Uzías","k":"pla","ref":"2 Cr 26","tgt":"max_fe","eco":1,"fx":[{"t":"res","r":"fe","v":-2,"sc":true}],"txt":"El jugador con más Fe pierde 2 Fe × banda.","flav":"El cargo se le subió a la cabeza. Mal asunto."},{"n":"Moscas y Tábanos","k":"pla","ref":"Éx 8","tgt":"all","eco":1,"fx":[{"t":"tax","r":"rec","per":4}],"txt":"Cada jugador pierde 1 Rec por cada 4 que tenga.","flav":"La estación de las moscas, edición extrema."},{"n":"El Ataque de Amalec","k":"pla","ref":"Dt 25","tgt":"min_army","eco":2,"fx":[{"t":"units","v":-1,"sc":false}],"txt":"El ejército más pequeño pierde 1 unidad.","flav":"Amalec nunca jugó limpio. Nunca."},{"n":"La Plaga de Asdod","k":"pla","ref":"1 Sam 5","tgt":"arkholder","eco":2,"fx":[{"t":"pv","v":-2}],"fb":{"tgt":"max_holy","fx":[{"t":"res","r":"fe","v":-2,"sc":true}]},"txt":"Quien tenga el Arca pierde 2 PV. Si nadie la tiene: quien controle más Templos y Ciudades Santas pierde 2 Fe × banda.","flav":"Los de Asdod devolvieron el paquete con dolor incluido."},{"n":"El Cautiverio","k":"pla","ref":"2 Re 25","tgt":"max_terr","eco":2,"fx":[{"t":"lose1"}],"txt":"El jugador con más territorios pierde su territorio más débil (no su capital): queda neutral.","flav":"Una mudanza que nadie había pedido."}],"tac":{"S":[{"n":"Los Valientes de David","e":"str","v":1,"copies":3,"ref":"2 Sam 23","txt":"+1 Fuerza.","flav":"Treinta valientes: no conocían el miedo ni el descanso."},{"n":"Los Escudos de Salomón","e":"str","v":2,"copies":2,"ref":"1 Re 10","txt":"+2 Fuerza.","flav":"Doscientos escudos de oro: brillaban más que luchaban."},{"n":"La Emboscada de Hai","e":"ambush","v":2,"copies":2,"ref":"Jos 8","txt":"Si DEFIENDES: +2 Fuerza y el atacante no roba botín.","flav":"Poned emboscada detrás de la ciudad. Y silencio."},{"n":"Los Pasos de Micmás","e":"negterr","v":0,"copies":1,"ref":"1 Sam 14","txt":"Anula el bono de montaña del rival.","flav":"Jonatán subió a gatas y bajó victorioso."},{"n":"La Cueva de Adulam","e":"retreat","v":0,"copies":2,"ref":"1 Sam 22","txt":"Si pierdes, retiras tus unidades a un territorio tuyo adyacente en vez de perderlas.","flav":"El despacho de David en la montaña."},{"n":"¡Por Yahvé y por Gedeón!","e":"perhero","v":2,"copies":1,"ref":"Jue 7","txt":"+2 Fuerza por cada héroe en tu bando.","flav":"Trescientas trompetas contra un ejército. Funcionó."},{"n":"Los Muros de Nehemías","e":"citydef","v":2,"copies":1,"ref":"Neh 4","txt":"+2 Fuerza defendiendo una Ciudad o Capital.","flav":"Con una mano construían y con la otra empuñaban la espada."}],"T":[{"n":"Los Carros de Hierro de Sísara","e":"terratk","v":3,"copies":2,"ref":"Jue 4","txt":"+3 Fuerza atacando en llano o desierto.","flav":"Novecientos carros herrados... hasta que llovió."},{"n":"Los Honderos de Benjamín","e":"predmg","v":0,"copies":2,"ref":"Jue 20","txt":"El rival pierde 1 de Fuerza antes de comparar.","flav":"Setecientos zurdos: un cabello era un blanco fácil."},{"n":"La Daga de Aod","e":"extrakill","v":2,"copies":2,"ref":"Jue 3","txt":"+2 Fuerza; si ganas, el rival pierde 1 unidad extra.","flav":"Aod entró con noticias y salió sin rey."},{"n":"La Quijada de Asno","e":"counter","v":0,"copies":1,"ref":"Jue 15","txt":"Si DEFIENDES y ganas, conquistas el territorio del atacante si quedó vacío.","flav":"El arma más rara y más eficaz de la historia."},{"n":"Los Trescientos de Gedeón","e":"overflow","v":1,"copies":1,"ref":"Jue 7","txt":"+1 Fuerza por cada unidad del rival por encima de las tuyas.","flav":"El mejor proceso de selección del ejército hebreo."},{"n":"Las Manos de Moisés en Alto","e":"strfe","v":2,"copies":1,"ref":"Éx 17","txt":"+2 Fuerza; +1 Fe si ganas.","flav":"Moisés subía la mano y su equipo ganaba. Menos mal que le sujetaban."},{"n":"La Carrera de Jehú","e":"per2","v":1,"copies":2,"ref":"2 Re 9","txt":"+1 Fuerza por cada 2 unidades tuyas.","flav":"Viene conduciendo como un loco. Así le reconocieron."},{"n":"El Consejo de Jusay","e":"sabotage","v":0,"copies":1,"ref":"2 Sam 17","txt":"Anula la Táctica del rival.","flav":"El Señor frustró el buen consejo de Ajitófel."}],"M":[{"n":"El Ángel del Señor","e":"str","v":4,"copies":2,"ref":"2 Re 19","txt":"+4 Fuerza.","flav":"Aquella noche el campamento asirio dejó de existir."},{"n":"El Fuego del Carmelo","e":"faithwin","v":0,"copies":1,"ref":"1 Re 18","txt":"Ganas automáticamente si tu Fe supera la del rival.","flav":"El Dios que responda con fuego, ése es Dios. Y respondió."},{"n":"Sal sobre Siquem","e":"scorch","v":0,"copies":1,"ref":"Jue 9","txt":"Si pierdes el territorio, queda arrasado: neutral y sin producir 1 ronda.","flav":"Abimelec se llevó la ciudad y la dejó sembrada de sal."},{"n":"Los Carros de Fuego de Dotán","e":"perholy","v":1,"copies":1,"ref":"2 Re 6","txt":"+1 Fuerza por cada Templo o Ciudad Santa que controlas.","flav":"El monte estaba lleno de caballos y carros de fuego."},{"n":"La Caída de Nínive","e":"negdef","v":0,"copies":1,"ref":"Nah 2","txt":"Anula TODOS los bonos defensivos del rival.","flav":"Las compuertas se abrieron y el palacio se derrumbó."},{"n":"Las Columnas de Sansón","e":"vengeance","v":0,"copies":1,"ref":"Jue 16","txt":"Si pierdes, el vencedor pierde la mitad de sus unidades restantes.","flav":"La peor despedida del mundo: con palacio incluido."},{"n":"El Manto de Elías","e":"eliasmove","v":0,"copies":1,"ref":"2 Re 2","txt":"Al resolver, mueve a Elías 1 casilla (gratis).","flav":"El manto cayó y Eliseo no lo pensó dos veces."}]},"taccost":{"S":0,"T":1,"M":2},"heroes":{"ISRAEL":[["Moisés",0,1,"Empieza en juego. Una vez por partida: mueve a Elías 1 casilla.","moises","Éx 3"],["Josué",4,2,"Al conquistar con él un territorio, ese territorio produce +1 Fe mientras lo controles.","josue","Jos 1"],["David",4,1,"Una vez por ronda: ignora una Plaga que te afecte.","david","1 Sam 17"],["Débora",4,1,"Si defiende con éxito, ganas 1 acción extra en tu próximo turno.","debora","Jue 4"]],"EGIPTO":[["Ramsés II",4,2,"Mientras esté en juego: +1 Rec en cada territorio fértil tuyo.","ramses","Éx 1"],["Imhotep",4,1,"Una vez por partida: anula una Plaga que te afecte.","imhotep","—"],["Sisac",4,1,"Al ganar un combate con él: +1 Rec de botín.","sisac","1 Re 14"]],"BABILONIA":[["Nabucodonosor",4,2,"+1 PV al final por cada Maravilla que poseas.","nabuco","Dn 1"],["Daniel",4,1,"Mientras esté en juego, Astrólogos de Caldea te cuesta 1 Con.","daniel","Dn 2"],["Nimrod",4,1,"+1 Conocimiento por ronda mientras esté en juego.","nimrod","Gén 10"]],"ASIRIA":[["Senaquerib",4,2,"Al conquistar con él un territorio de otro jugador: +1 Rec de saqueo.","senaquerib","2 Re 18"],["Holofernes",5,3,"Si gana por 3 o más de Fuerza, el rival pierde 1 unidad extra en otro territorio.","holofernes","Jdt 2"],["Sargón II",4,1,"Reclutar en su territorio añade 3 unidades en lugar de 2.","sargon","Is 20"]],"FILISTEA":[["Goliat",5,3,"Gigante: su ejército no puede usar el Movimiento Costero.","goliat","1 Sam 17"],["Dagón",4,1,"+1 Fuerza adicional cuando defiende.","dagonh","Jue 16"],["Aquís",4,1,"Una vez por ronda: empuja 1 unidad enemiga adyacente a un territorio vacío.","aquis","1 Sam 27"],["Dalila",4,1,"Una vez por partida: anula el bono de los héroes enemigos en un combate.","dalila","Jue 16"]],"PERSIA":[["Asuero",5,3,"+1 PV al final por cada 3 territorios que controles.","asuero","Est 1"],["Ciro el Grande",4,1,"Al conquistar con él un territorio de otro jugador, le arrebatas una reliquia de Nivel I.","cirohero","Esd 1"],["Ester",4,1,"Una vez por partida: anula una Plaga que te afecte y ganas 2 Fe.","ester","Est 4"]]},"marav":[["Templo de Salomón",5,2,4,"+2 Fe por ronda; cuenta como Templo."],["Gran Pirámide",6,0,4,"+1 Con por ronda; anula 1 Plaga (una vez)."],["Murallas Inexpugnables",5,0,3,"+3 Fuerza defendiendo tu Capital o este territorio."],["Jardines Colgantes",4,2,4,"+2 Rec por ronda."],["Gran Zigurat",4,1,3,"+1 Fe y +1 Con por ronda."],["Biblioteca de Asurbanipal",4,3,4,"+2 Con por ronda."],["Puerto de Tiro",5,2,3,"+2 Rec por ronda; ves la próxima carta de la Voz."]],"rel":{"1":[["Vara de Aarón","+1 Fe por ronda.",1,3],["Ojo de Horus","+1 Rec por ronda.",1,3],["Sello de Hammurabi","Explorar no te cuesta Conocimiento.",1,3],["Honda de David","+2 Fuerza si el rival combate con un héroe.",1,3],["Lámpara del Templo","+1 Fe por ronda si tienes un Templo.",1,3],["Pectoral Sacro","+1 Con por ronda.",1,3]],"2":[["Espada de Gat","+1 Fuerza en todo combate.",2,2],["Corona del Nilo","+1 PV al final por cada 3 Rec (máx. 4).",2,2],["Yelmo del Mar","+1 PV al final por cada Ciudad o Capital (máx. 4).",2,2],["Estandarte de Asur","+1 PV al final por cada conquista en combate (máx. 4).",2,2],["Tablillas del Destino","+1 PV al final por cada 3 Con (máx. 4).",2,2],["Arpa de David","Anula 1 Plaga que te afecte (una vez).",2,2]],"3":[["Tablas de la Ley","+2 PV en el Juicio del Horeb.",4,2],["Trono de Salomón","+1 PV al final por cada Templo o Ciudad Santa (máx. 5).",4,2],["Espada Flamígera","+3 Fuerza en un combate por ronda.",4,2],["Libro de la Vida","+1 PV al final por cada reliquia que poseas (máx. 5).",4,2],["Querubines de Oro","+1 Fe y +1 Con por ronda; el Ritual del Arca te cuesta 2 Fe menos.",4,2]]},"starts":{"ISRAEL":[5,6,3],"EGIPTO":[5,1,4],"BABILONIA":[5,3,6],"ASIRIA":[6,4,5],"FILISTEA":[7,4,4],"PERSIA":[5,4,5]},"powers":{"ISRAEL":"Señor del Tiempo: Una vez por ronda, paga 1 Fe: mueve a Elías 1 casilla adelante o atrás (no gasta acción). · El Pacto: +2 PV por cada Templo o Ciudad Santa que controles (máx. 8).","EGIPTO":"Granero del Faraón: Tus Rituales convierten Recursos en Fe o Conocimiento 1:1 (resto: 2:1). · Obras del Faraón: Puedes erigir hasta 3 Maravillas (resto: 2). Tus PV de identidad son los de tus Maravillas: no suman aparte.","BABILONIA":"Astrólogos de Caldea: Una vez por ronda, antes del Juicio, paga 2 Con: descarta la carta de la Voz y revela otra. · Zigurats del Saber: +2 PV por cada Escuela de Profetas que controles (máx. 10).","ASIRIA":"Deportación: Al conquistar un territorio de otro jugador, 1 unidad derrotada se une a tu ejército en ese territorio. · Anales de Guerra: +1 PV por cada territorio que arrebates en combate a otro jugador (máx. 6).","FILISTEA":"Pueblos del Mar: Una vez por turno (1 acción): mueve un ejército entre dos territorios tuyos del borde del mapa, a cualquier distancia. · La Pentápolis: +2 PV por cada Ciudad o Capital que controles (máx. 8).","PERSIA":"Caminos Reales: Tus movimientos pueden recorrer 2 territorios si el intermedio es tuyo o neutral sin guarnición. · Satrapías: +1 PV por cada 2 territorios que controles (máx. 5)."},"factions":[{"name":"ISRAEL","color":"#2F5C9E","capital":"Samaria"},{"name":"EGIPTO","color":"#1F9E8C","capital":"Menfis"},{"name":"BABILONIA","color":"#5B4FA0","capital":"Babilonia"},{"name":"ASIRIA","color":"#A8392A","capital":"Nínive"},{"name":"FILISTEA","color":"#5E8C5A","capital":"Gat"},{"name":"PERSIA","color":"#C77B30","capital":"Susa"}],"fac":{"ISRAEL":{"epithet":"El Pueblo del Pacto","archetype":"Fe · Tiempo · Lugares Santos","passives":["Comienza con Moisés en Samaria."],"mechanic":["Señor del Tiempo","Una vez por ronda, paga 1 Fe: mueve a Elías 1 casilla adelante o atrás (no gasta acción)."],"identity":["El Pacto","+2 PV por cada Templo o Ciudad Santa que controles (máx. 8)."],"lore":"Doce tribus guiadas por profetas. No son los más fuertes ni los más ricos: su poder es la fidelidad y el dominio del tiempo sagrado.","style":"Sé el pueblo de los Lugares Santos. Demora a Elías cuando vas por detrás; apresúralo cuando lideras."},"EGIPTO":{"epithet":"El Granero del Mundo","archetype":"Economía · Monumentos · Resistencia","passives":["Crecida del Nilo: inmune a las Plagas de Sequía y Langosta."],"mechanic":["Granero del Faraón","Tus Rituales convierten Recursos en Fe o Conocimiento 1:1 (resto: 2:1)."],"identity":["Obras del Faraón","Puedes erigir hasta 3 Maravillas (resto: 2). Tus PV de identidad son los de tus Maravillas: no suman aparte."],"lore":"El Nilo crece cada año y el Faraón convierte el grano en piedra eterna. Lento al principio, imparable cuando sus obras se alzan.","style":"Acumula, convierte y construye. Las Maravillas son tu ejército."},"BABILONIA":{"epithet":"Los Sabios de Caldea","archetype":"Conocimiento · Profecía · Manipulación","passives":["Escuela de Profetas por 4 Con (resto: 5).","Ves siempre la próxima carta de la Voz."],"mechanic":["Astrólogos de Caldea","Una vez por ronda, antes del Juicio, paga 2 Con: descarta la carta de la Voz y revela otra."],"identity":["Zigurats del Saber","+2 PV por cada Escuela de Profetas que controles (máx. 10)."],"lore":"Astrólogos que leen el cielo antes que nadie. Babilonia no espera al destino: lo reescribe.","style":"Funda Escuelas, lee el futuro y desvía las plagas hacia tus rivales."},"ASIRIA":{"epithet":"El León de Asur","archetype":"Conquista · Terror · Deportación","passives":["Reclutar te cuesta 1 Rec (resto: 2)."],"mechanic":["Deportación","Al conquistar un territorio de otro jugador, 1 unidad derrotada se une a tu ejército en ese territorio."],"identity":["Anales de Guerra","+1 PV por cada territorio que arrebates en combate a otro jugador (máx. 6)."],"lore":"Nínive se alimenta de conquistas. Cada ciudad tomada aporta tributo y cautivos a la máquina de guerra.","style":"Ataca pronto y a menudo. Cada victoria te hace más grande."},"FILISTEA":{"epithet":"Los Señores del Hierro","archetype":"Hierro · Ciudades · Costa","passives":["Monopolio del Hierro: +1 Fuerza en todo combate y +1 más defendiendo.","Construye Ciudades por 2 Rec (resto: 3)."],"mechanic":["Pueblos del Mar","Una vez por turno (1 acción): mueve un ejército entre dos territorios tuyos del borde del mapa, a cualquier distancia."],"identity":["La Pentápolis","+2 PV por cada Ciudad o Capital que controles (máx. 8)."],"lore":"Los Pueblos del Mar trajeron el secreto del hierro. Cinco ciudades amuralladas y una costa que solo ellos dominan.","style":"Funda ciudades, fortifícalas con hierro y golpea por la costa donde nadie te espera."},"PERSIA":{"epithet":"El Imperio Aqueménida","archetype":"Expansión · Movilidad · Tolerancia","passives":["Tolerancia: ignoras la primera Plaga de cada banda de Elías.","Satrapías leales: tus territorios con menos de 2 unidades defienden como si tuvieran 2."],"mechanic":["Caminos Reales","Tus movimientos pueden recorrer 2 territorios si el intermedio es tuyo o neutral sin guarnición."],"identity":["Satrapías","+1 PV por cada 2 territorios que controles (máx. 5)."],"lore":"El rey de reyes gobierna por decreto y tolerancia. Sus Caminos Reales unen satrapías desde la India hasta Egipto.","style":"Expándete en todas direcciones. La amplitud del imperio es tu victoria."}},"decrees":{"ISRAEL":[{"id":"mana","n":"Maná del Cielo","ref":"Éx 16","band":"S","txt":"Ganas 2 Recursos y 2 Fe.","flav":"Pan del cielo: puntual cada mañana y sin repartidor."},{"id":"jerico","n":"Las Trompetas de Jericó","ref":"Jos 6","band":"T","txt":"Este turno, tu próximo ataque anula todos los bonos defensivos del rival y suma +2 Fuerza. Una guarnición cuenta la mitad.","flav":"Siete vueltas, siete trompetas, y la obra de derribo salió gratis."},{"id":"gabaon","n":"El Sol se Detiene en Gabaón","ref":"Jos 10","band":"M","txt":"Ganas 2 acciones adicionales este turno.","flav":"El día más largo de la historia: pidieron prórroga y les funcionó."}],"EGIPTO":[{"id":"carros","n":"Los Carros del Faraón","ref":"Éx 14","band":"S","txt":"Este turno, tus ataques en llano o desierto suman +3 Fuerza.","flav":"Seiscientos carros escogidos y todos con prisa."},{"id":"abundancia","n":"Los Siete Años de Abundancia","ref":"Gén 41","band":"T","txt":"Recibes ahora una Producción completa adicional.","flav":"Siete vacas gordas: época de llenar el granero."},{"id":"magos","n":"Los Magos del Faraón","ref":"Éx 7","band":"M","txt":"En el próximo Juicio decides quién recibe la carta de la Voz.","flav":"Los magos de Egipto hicieron lo mismo... casi."}],"BABILONIA":[{"id":"babel","n":"La Confusión de Babel","ref":"Gén 11","band":"S","txt":"Cada rival pierde la mitad de su Conocimiento (redondeo abajo).","flav":"Todos hablaron a la vez y nadie entendió nada."},{"id":"mene","n":"Mene, Mene, Tekel","ref":"Dn 5","band":"T","txt":"El rival con más PV pierde su reliquia de menor nivel.","flav":"Grafiti divino en la pared del banquete."},{"id":"horno","n":"El Horno Ardiente","ref":"Dn 3","band":"M","txt":"Elimina hasta 4 unidades enemigas de un territorio adyacente a uno tuyo.","flav":"Calentadlo siete veces más. Y ni un pelo quemado."}],"ASIRIA":[{"id":"leones","n":"Los Leones de Asur","ref":"Nah 2","band":"S","txt":"Recluta 3 unidades gratis en una Ciudad o Capital tuya.","flav":"¿Dónde está la guarida de los leones? Exactamente aquí."},{"id":"laquis","n":"El Asedio de Laquis","ref":"2 Re 18","band":"T","txt":"Este turno, tu próximo ataque contra Ciudad, Capital o guarnición suma +3 Fuerza; si ganas, no pierdes unidades.","flav":"Senaquerib traía escalera y mucha paciencia."},{"id":"furia","n":"La Furia de Senaquerib","ref":"2 Re 19","band":"M","txt":"Tus próximos 2 ataques de este turno no gastan acción.","flav":"Cuando Asiria se enfada, sobran testigos."}],"FILISTEA":[{"id":"herrerias","n":"Las Herrerías de Filistea","ref":"1 Sam 13","band":"S","txt":"Cada rival con Recursos te entrega 1 Recurso.","flav":"El monopolio del hierro: negocio redondo."},{"id":"goliat","n":"El Desafío de Goliat","ref":"1 Sam 17","band":"T","txt":"Este turno, en tu próximo combate el rival no puede jugar Táctica ni Milagro, y sumas +2 Fuerza.","flav":"Dadme un hombre. Y trajo uno pequeño pero seguro."},{"id":"dagon","n":"El Templo de Dagón","ref":"1 Sam 5","band":"M","txt":"Erige gratis un Templo en una Ciudad tuya y recibe su reliquia.","flav":"La estatua de Dagón no aguantó la visita del Arca."}],"PERSIA":[{"id":"satrapas","n":"Los Sátrapas","ref":"Dn 6","band":"S","txt":"Coloca 1 unidad en hasta 2 territorios neutrales sin guarnición adyacentes a los tuyos: pasan a ser tuyos.","flav":"Ciento veinte sátrapas y cada uno con su agenda."},{"id":"medos","n":"La Ley de Medos y Persas","ref":"Dn 6","band":"T","txt":"Este turno, tu próximo combate suma +3 Fuerza y, si ganas, no pierdes unidades.","flav":"Firmado y sellado: no admite devoluciones."},{"id":"ciro","n":"El Decreto de Ciro","ref":"Esd 1","band":"M","txt":"Ganas 2 PV permanentes por cada región distinta donde controlas territorio (máx. 8).","flav":"El decreto más famoso: todos vuelven a casa."}]},"horeb":{"n":"La Voz Apacible","ref":"1 Re 19","txt":"Al terminar la partida, quien guarde el Arca gana 4 PV. Si nadie la tiene, quien controle más Ciudades Santas gana 3 PV (empate: todos los empatados). Cada Tabla de la Ley da +2 PV.","flav":"Tras el fuego, un susurro apacible y delicado."},"version":"5.0","bal":{"templeCost":5,"templeCostISR":5,"schoolCost":5,"schoolBab":4,"filisteaCityCost":2,"feCap":4,"feCapISR":4,"conCap":4,"conDiv":2,"covenantPer":2,"covenantCap":6,"babSchoolPer":2,"babSchoolCap":10,"asiWinPer":1,"asiWinCap":6,"citiesPer":2,"citiesCap":8,"empireDiv":2,"empireCap":5,"egyWonderDisc":0,"egyWonderPer":0,"egyWonderCap":3,"asiLoot":0,"asiRecruitCost":1,"asiWinGarr":false,"canaanGarr":3,"canaanCapGarr":5,"holyGarr4":4,"ciroPer":2,"ciroCap":8,"arkFe":5,"arkPV":5,"holyPV":2,"horebPV":3,"horebArkPV":4,"storeCap":15,"timeFe":1,"satrapMin":2,"maxRounds":9,"catchupRec":1,"catchupFe":1,"starts":{"ISRAEL":[5,6,3],"EGIPTO":[5,1,4],"BABILONIA":[5,3,6],"ASIRIA":[6,4,5],"FILISTEA":[7,4,4],"PERSIA":[5,4,5]},"deportCap":4,"filIronAtk":2,"filIronDef":3,"egyptFertile":-1}};
+// ===================== NÚCLEO v4.0 =====================
+let S=null;
+// ===== CONFIG de balance v4.0 (cada interruptor existe para los sweeps de aislamiento) =====
+const CFG = (typeof global!=='undefined' && global.CFG) || Object.assign({
+  templeCost:5, templeCostISR:4, schoolCost:5, schoolBab:4,
+  relPV:{1:1,2:2,3:4},
+  feCap:4, feCapISR:6, conCap:4, conDiv:2,
+  arkFe:5, arkPV:7,
+  egyptFertile:0, filisteaCityCost:2,
+  covenantPer:2, covenantCap:8, empireCap:5, citiesPer:2, citiesCap:8,
+  babSchoolPer:2, babSchoolCap:6, egyWonderPer:0, egyWonderCap:3, egyWonderDisc:1, asiWinPer:1, asiWinCap:6, empireDiv:2,
+  catchupOn:true, catchupRec:1, catchupFe:1,
+  navalOn:true, aiHeroesOn:true, aiHeroMax:2, asiAggro:0,
+  // v4.0
+  clockEco:true,          // la Voz avanza a Elías 1 o 2 casillas (antes: siempre 1)
+  maxRounds:9, storeCap:15,
+  horebOn:true, horebPV:3, horebArkPV:4,
+  tieAll:true,            // empates en objetivos de la Voz: afectan a todos los empatados
+  decreesOn:true, heroAbilOn:true,
+  timeOn:true, timeFe:1, satrapOn:true, satrapMin:2, granaryOn:true, astroOn:true, deportOn:true, roadsOn:true,
+  playerFactions:null     // lista de facciones (variante 4-5 jugadores)
+}, (typeof D!=='undefined'&&D.bal)||{});
+const ABBR={ISRAEL:'ISR',EGIPTO:'EGI',BABILONIA:'BAB',ASIRIA:'ASI',FILISTEA:'FIL',PERSIA:'PER'};
+const HEXMAP={}; BOARD.hexes.forEach(h=>HEXMAP[h.q+','+h.r]=h);
+const DIRS=[[1,0],[1,-1],[0,-1],[-1,0],[-1,1],[0,1]];
+const REGION_OF={ISRAEL:0,EGIPTO:1,BABILONIA:2,ASIRIA:3,FILISTEA:4,PERSIA:5};
+function neighbors(q,r){return DIRS.map(([dq,dr])=>HEXMAP[(q+dq)+','+(r+dr)]).filter(Boolean);}
+function nbKeys(k){const [q,r]=k.split(',').map(Number);return neighbors(q,r).map(h=>h.q+','+h.r);}
+function isBorder(q,r){return neighbors(q,r).length<6;}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function band(e){return e<=4?'S':e<=8?'T':'M';}
+function bandName(e){return e<=4?'Susurro':e<=8?'Trueno':e<=12?'Tormenta':'Horeb';}
+function bandColor(e){return e<=4?'#7793a8':e<=8?'#b5762e':'#8B1A1A';}
+function relLevel(e){return e<=4?1:e<=8?2:3;}
+function cap(s){return s.charAt(0)+s.slice(1).toLowerCase();}
+function nameOf(k){const h=HEXMAP[k];return h?(h.ark?'el Arca':(h.holy||h.name||'Senda Sagrada')):'?';}
+function hasHero(p,id){return p.heroes.some(h=>h.id===id);}
+function heroAt(p,id,k){return p.heroes.some(h=>h.id===id&&h.hex===k);}
+function facData(name){return D.fac[name];}
+
+// ---------------- mazos físicos ----------------
+function buildTacDeck(b){ const out=[]; D.tac[b].forEach(t=>{for(let i=0;i<(t.copies||1);i++)out.push(t);}); return shuffle(out); }
+function drawTactic(b){ if(!S.tacDecks[b].length)S.tacDecks[b]=buildTacDeck(b); return S.tacDecks[b].pop(); }
+function buildRelDeck(l){ const out=[]; D.rel[l].forEach(r=>{for(let i=0;i<(r[3]||1);i++)out.push(r);}); return shuffle(out); }
+function drawRelic(lvl){ if(CFG.relUnlimited){ const pool=D.rel[lvl]; const r=pool[Math.floor(Math.random()*pool.length)]; return {name:r[0],desc:r[1],pv:CFG.relPV[lvl],lvl}; }
+  for(let l=lvl;l>=1;l--){ if(S.relDecks[l].length){ const r=S.relDecks[l].pop(); return {name:r[0],desc:r[1],pv:CFG.relPV[l],lvl:l}; } } return null; }
+
+function newGame(nPlayers, aiFlags, facList){
+  const names = facList || CFG.playerFactions || D.factions.slice(0,nPlayers).map(f=>f.name);
+  const facs = names.map(n=>D.factions.find(f=>f.name===n));
+  S={ round:1, elias:0, turn:0, tid:1, actionsLeft:3, log:[], scorched:{}, holyTemp:{},
+      ai:aiFlags||facs.map(()=>false),
+      vozDeck:shuffle(D.voz.map((c,i)=>i)), vozDiscard:[], _vozNext:null,
+      tacDecks:{S:buildTacDeck('S'),T:buildTacDeck('T'),M:buildTacDeck('M')},
+      relDecks:{1:buildRelDeck('1'),2:buildRelDeck('2'),3:buildRelDeck('3')},
+      players:facs.map((f,i)=>{
+        const st=(CFG.starts&&CFG.starts[f.name])||D.starts[f.name];
+        return {id:i,name:f.name,color:f.color,capital:f.capital,
+          rec:st[0],fe:st[1],con:st[2],pv:0,
+          reliquias:[],tactics:[],maravillas:[],heroes:[],wins:0,ark:false,
+          plagueImmuneBand:'', decrees:(D.decrees[f.name]||[]).map(d=>d.id), _decTid:-1 };
+      }),
+      control:{},units:{},build:{},garrison:{},
+      sel:null,pending:null,moveFrom:null,_cont:null,_combat:null, horebDone:false };
+  S.players.forEach(p=>{
+    const c=BOARD.hexes.find(h=>h.capital&&h.name===p.capital);
+    const k=c.q+','+c.r; S.control[k]=p.id; S.units[k]=4; S.build[k]='ciudad';
+    const adj=neighbors(c.q,c.r).filter(h=>!h.capital&&h.region===c.region&&!h.holy);
+    if(adj[0]){const k2=adj[0].q+','+adj[0].r; S.control[k2]=p.id; S.units[k2]=2;}
+    if(p.name==='ISRAEL'){ p.heroes.push({name:'Moisés',bonus:1,hex:k,id:'moises'}); }
+  });
+  const hg=(names.length===4&&CFG.holyGarr4)?CFG.holyGarr4:(names.length<6&&CFG.holyGarrFew)?CFG.holyGarrFew:(CFG.holyGarr6||3);   // 4-5 jugadores: Ciudades Santas mejor guarnecidas
+  BOARD.hexes.forEach(h=>{ const k=h.q+','+h.r; if(h.holy)S.garrison[k]=hg; });   // el Arca es intransitable: se toma por Ritual
+  // Variante 4-5 jugadores: los pueblos de Canaán guarnecen las regiones sin dueño
+  const used=new Set(names.map(n=>REGION_OF[n]));
+  BOARD.hexes.forEach(h=>{ const k=h.q+','+h.r;
+    if(typeof h.region==='number' && !used.has(h.region)) S.garrison[k]=h.capital?(CFG.canaanCapGarr||4):(CFG.canaanGarr||2); });
+  beginTurn();
+  return S;
+}
+// Inicio de turno: reinicia acciones y efectos de "este turno"
+function beginTurn(){
+  const p=S.players[S.turn]; S.tid++;
+  S.actionsLeft=3; p._navalUsed=false; p._freeAtk=0;
+  if(p._bonusAction){ S.actionsLeft+=p._bonusAction; p._bonusAction=0; }
+}
+
+// ---- recuentos ----
+function countTerr(id){let n=0;for(const k in S.control)if(S.control[k]===id)n++;return n;}
+function countArmy(id){let n=0;for(const k in S.control)if(S.control[k]===id)n+=(S.units[k]||0);return n;}
+function isTempleHex(k){ if(S.build[k]==='templo')return true;
+  if(S.build[k]==='maravilla'){ const o=S.control[k]; if(o==null)return false; return S.players[o].maravillas.some(m=>m.hex===k&&m.name==='Templo de Salomón'); } return false; }
+function countHoly(id){let n=0;for(const k in S.control){if(S.control[k]!==id)continue;if(HEXMAP[k].holy)n++;if(isTempleHex(k))n++;}return n;}
+function countCities(id){let n=0;for(const k in S.control){if(S.control[k]!==id)continue;if(S.build[k]==='ciudad'||HEXMAP[k].capital)n++;}return n;}
+function countSchools(id){let n=0;for(const k in S.control){if(S.control[k]!==id)continue;if(S.build[k]==='escuela')n++;}return n;}
+function countTerrTerr(id,terr){let n=0;for(const k in S.control)if(S.control[k]===id&&(terr==='any'||HEXMAP[k].terr===terr))n++;return n;}
+function countRegions(id){const s=new Set();for(const k in S.control)if(S.control[k]===id)s.add(String(HEXMAP[k].region));return s.size;}
+function biggestArmyHex(id){let bk=null,bn=-1;for(const k in S.control)if(S.control[k]===id&&(S.units[k]||0)>bn){bn=S.units[k];bk=k;}return bk;}
+function capitalKey(p){const c=BOARD.hexes.find(h=>h.capital&&h.name===p.capital);return c.q+','+c.r;}
+function hasBuild(id,type){for(const k in S.control)if(S.control[k]===id&&S.build[k]===type)return true;return false;}
+function hasRelic(p,n){return p.reliquias.some(r=>r.name===n);}
+function hasWonder(p,n){return p.maravillas.some(m=>m.name===n);}
+
+// ---- producción ----
+function produce(p){
+  let rec=0,fe=0,con=0;
+  const ramses=CFG.heroAbilOn&&hasHero(p,'ramses');
+  for(const k in S.control){ if(S.control[k]!==p.id)continue;
+    if(S.scorched[k]&&S.scorched[k]>=S.round) continue;
+    const h=HEXMAP[k];
+    rec+=1;
+    if(h.terr==='fertil'){ rec+=(p.name==='EGIPTO'?1+CFG.egyptFertile:1); if(ramses)rec+=1; }
+    const b=S.build[k];
+    if(b==='ciudad')rec+=1;
+    if(b==='templo'||h.holy)fe+=1;
+    if(b==='escuela')con+=1;
+    if(h.capital)con+=1;
+    if(S.holyTemp[k]===p.id)fe+=1;
+  }
+  if(CFG.heroAbilOn&&hasHero(p,'nimrod'))con+=1;
+  p.reliquias.forEach(r=>{ if(r.name==='Ojo de Horus')rec++; if(r.name==='Vara de Aarón')fe++;
+    if(r.name==='Lámpara del Templo'&&hasBuild(p.id,'templo'))fe++; if(r.name==='Pectoral Sacro')con++;
+    if(r.name==='Querubines de Oro'){fe++;con++;} });
+  p.maravillas.forEach(m=>{ if(m.name==='Jardines Colgantes')rec+=2; if(m.name==='Templo de Salomón')fe+=2;
+    if(m.name==='Gran Zigurat'){fe++;con++;} if(m.name==='Gran Pirámide')con++; if(m.name==='Biblioteca de Asurbanipal')con+=2;
+    if(m.name==='Puerto de Tiro')rec+=2; });
+  p.rec+=rec;p.fe+=fe;p.con+=con;
+  return {rec,fe,con};
+}
+
+// ---- puntuación ----
+function scoreBreakdown(p){
+  const b={terr:0,santas:0,reliq:0,marav:0,fe:0,con:0,ident:0,heroes:0,arca:0,eventos:p.pv};
+  for(const k in S.control){ if(S.control[k]!==p.id)continue; const h=HEXMAP[k]; b.terr+=1; if(h.holy)b.santas+=(CFG.holyPV==null?3:CFG.holyPV); }
+  p.reliquias.forEach(r=>{ b.reliq+=r.pv;
+    if(r.name==='Yelmo del Mar')b.reliq+=Math.min(4,countCities(p.id));
+    if(r.name==='Corona del Nilo')b.reliq+=Math.min(4,Math.floor(p.rec/3));
+    if(r.name==='Estandarte de Asur')b.reliq+=Math.min(4,p.wins);
+    if(r.name==='Trono de Salomón')b.reliq+=Math.min(5,countHoly(p.id));
+    if(r.name==='Libro de la Vida')b.reliq+=Math.min(5,p.reliquias.length);
+    if(r.name==='Tablillas del Destino')b.reliq+=Math.min(4,Math.floor(p.con/3));
+  });
+  p.maravillas.forEach(m=>b.marav+=m.pv);
+  b.fe=Math.min((p.name==='ISRAEL'?CFG.feCapISR:CFG.feCap),Math.floor(p.fe/2));
+  b.con=Math.min(CFG.conCap,Math.floor(p.con/CFG.conDiv));
+  if(p.name==='ISRAEL') b.ident=Math.min(CFG.covenantCap,CFG.covenantPer*countHoly(p.id));
+  if(p.name==='EGIPTO') b.ident=Math.min(CFG.egyWonderCap,CFG.egyWonderPer*p.maravillas.length);
+  if(p.name==='BABILONIA') b.ident=Math.min(CFG.babSchoolCap,CFG.babSchoolPer*countSchools(p.id));
+  if(p.name==='ASIRIA') b.ident=Math.min(CFG.asiWinCap,CFG.asiWinPer*(CFG.asiWinGarr===false?(p.winsP||0):p.wins));
+  if(p.name==='FILISTEA') b.ident=Math.min(CFG.citiesCap,CFG.citiesPer*countCities(p.id));
+  if(p.name==='PERSIA') b.ident=Math.min(CFG.empireCap,Math.floor(countTerr(p.id)/CFG.empireDiv));
+  if(CFG.heroAbilOn){ if(hasHero(p,'nabuco'))b.heroes+=p.maravillas.length; if(hasHero(p,'asuero'))b.heroes+=Math.floor(countTerr(p.id)/3); }
+  if(p.ark)b.arca=CFG.arkPV;
+  b.total=b.terr+b.santas+b.reliq+b.marav+b.fe+b.con+b.ident+b.heroes+b.arca+b.eventos;
+  return b;
+}
+function score(p){ return scoreBreakdown(p).total; }
+// Desempate oficial: PV → Fe → territorios
+function ranking(){ return S.players.map(p=>({p,pv:score(p)})).sort((a,b)=>b.pv-a.pv||b.p.fe-a.p.fe||countTerr(b.p.id)-countTerr(a.p.id)); }
+
+// Bendición del Rezagado
+function applyCatchup(){
+  if(!CFG.catchupOn) return null;
+  const sc=S.players.map(p=>({p,pv:score(p)})); const min=Math.min(...sc.map(s=>s.pv));
+  const last=sc.filter(s=>s.pv===min); if(last.length>=S.players.length) return null;
+  last.forEach(s=>{ s.p.rec+=CFG.catchupRec; s.p.fe+=CFG.catchupFe; });
+  return {ids:last.map(s=>s.p.id), rec:CFG.catchupRec, fe:CFG.catchupFe};
+}
+// Juicio del Horeb (fin de partida)
+function horebJudgment(){
+  if(S.horebDone||!CFG.horebOn) return null; S.horebDone=true;
+  const res={ark:null,holy:[],tablas:[]};
+  const holder=S.players.find(p=>p.ark);
+  if(holder){ holder.pv+=CFG.horebArkPV; res.ark=holder.id; }
+  else { const hs=S.players.map(p=>countHolyOnly(p.id)); const mx=Math.max(...hs);
+    if(mx>0) S.players.forEach((p,i)=>{ if(hs[i]===mx){ p.pv+=CFG.horebPV; res.holy.push(p.id);} }); }
+  S.players.forEach(p=>{ const n=p.reliquias.filter(r=>r.name==='Tablas de la Ley').length; if(n){p.pv+=2*n;res.tablas.push(p.id);} });
+  return res;
+}
+function countHolyOnly(id){let n=0;for(const k in S.control)if(S.control[k]===id&&HEXMAP[k].holy)n++;return n;}
+// ===================== COMBATE =====================
+function combatCtx(fromKey,toKey,n){
+  const atkP=S.players[S.turn];
+  const toHx=HEXMAP[toKey];
+  const garr=S.garrison[toKey];
+  const defOwner=garr?null:S.control[toKey];
+  const defP=defOwner!=null?S.players[defOwner]:null;
+  const allU=S.units[fromKey]||0;
+  const atkUnits=(n==null)?allU:Math.max(0,Math.min(allU,n));   // unidades que atacan
+  const stay=allU-atkUnits;                                        // las que se quedan de guarnición
+  let defUnits=garr?garr:(S.units[toKey]||0);
+  const defBase=defUnits; let satrap=false, jerHalf=false;
+  const atkHeroes=atkP.heroes.filter(h=>h.hex===fromKey);
+  const defHeroes=defP?defP.heroes.filter(h=>h.hex===toKey):[];
+  const isCity=S.build[toKey]==='ciudad'||toHx.capital;
+  // Decretos de "este turno / próximo combate"
+  const dec={ jericho:!!atkP._jericho, carros:atkP._carrosTid===S.tid, goliat:atkP._goliatTid===S.tid,
+              medos:atkP._medosTid===S.tid, laquis:atkP._laquisTid===S.tid && (isCity||!!garr) };
+  if(defP&&defP.name==='PERSIA'&&CFG.satrapOn&&defUnits<CFG.satrapMin){ defUnits=CFG.satrapMin; satrap=true; }   // Satrapías leales
+  if(dec.jericho && garr){ defUnits=Math.floor(garr/2); jerHalf=true; }
+  // Dalila: anula los héroes enemigos una vez por partida (automática)
+  let dalila=null;
+  if(CFG.heroAbilOn){
+    if(hasHero(atkP,'dalila')&&!atkP._dalilaUsed&&defHeroes.length) dalila='def';
+    else if(defP&&hasHero(defP,'dalila')&&!defP._dalilaUsed&&atkHeroes.length) dalila='atk';
+  }
+  return {fromKey,toKey,toHx,garr,atkP,defP,atkUnits,stay,defUnits,defBase,satrap,jerHalf,atkHeroes,defHeroes,isCity,dec,dalila,
+    defBuilding:S.build[toKey], terr:toHx.terr};
+}
+// Fuerza de un bando con desglose. preview=true: sin tirar el dado ni consumir efectos (vista previa).
+// La vista previa y el resultado usan exactamente esta función (vía combatCalc).
+function sideStrength(ctx, side, tac, oppTacCancelled, preview){
+  const isAtk = side==='atk';
+  const me = isAtk?ctx.atkP:ctx.defP;
+  const myUnits = isAtk?ctx.atkUnits:ctx.defUnits;
+  const oppUnits = isAtk?ctx.defUnits:ctx.atkUnits;
+  const heroes = isAtk?ctx.atkHeroes:ctx.defHeroes;
+  const oppHeroes = isAtk?ctx.defHeroes:ctx.atkHeroes;
+  const heroesOff = ctx.dalila===side;
+  let str=0, roll=0; const parts=[];
+  const add=(lbl,v)=>{ if(!v)return; str+=v; parts.push([lbl,v]); };
+  let ulbl=myUnits===1?'unidad':'unidades';
+  if(!isAtk&&ctx.garr) ulbl=myUnits===1?'guarnición':'de guarnición';
+  if(!isAtk&&ctx.satrap) ulbl+=' (Satrapías leales)';
+  if(!isAtk&&ctx.jerHalf) ulbl+=' (murallas de Jericó a la mitad)';
+  parts.push([ulbl,myUnits]); str+=myUnits;
+  let dieChance=false;
+  if(!heroesOff){
+    heroes.forEach(h=>add('héroe '+h.name,h.bonus));
+    if(heroes.length){ if(preview) dieChance=true; else { roll=1+Math.floor(Math.random()*6); if(roll>=5)add(`dado legendario (${roll})`,1); else parts.push([`dado legendario ${roll}, sin bono`,0]); } }
+    if(!isAtk&&CFG.heroAbilOn&&heroes.some(h=>h.id==='dagonh'))add('Dagón',1);
+  } else if(heroes.length) parts.push(['héroes anulados por Dalila',0]);
+  if(me&&me.ark)add('el Arca',1);
+  if(me&&me.name==='FILISTEA') add('Hierro filisteo',isAtk?(CFG.filIronAtk==null?1:CFG.filIronAtk):(CFG.filIronDef==null?2:CFG.filIronDef));
+  if(me&&hasRelic(me,'Espada de Gat'))add('Espada de Gat',1);
+  if(me&&hasRelic(me,'Honda de David')&&oppHeroes.length&&ctx.dalila!==(isAtk?'def':'atk'))add('Honda de David',2);
+  if(me&&hasRelic(me,'Espada Flamígera')&&me._flamRound!==S.round){ add('Espada Flamígera',3); if(!preview)me._flamPending=true; }
+  if(isAtk){
+    if(ctx.dec.jericho)add('Trompetas de Jericó',2);
+    if(ctx.dec.carros&&(ctx.terr==='llano'||ctx.terr==='desierto'))add('Carros del Faraón',3);
+    if(ctx.dec.laquis)add('Asedio de Laquis',3);
+    if(ctx.dec.goliat)add('Desafío de Goliat',2);
+    if(ctx.dec.medos)add('Medos y Persas',3);
+  }
+  let defBonus=0; const defParts=[];
+  if(!isAtk){
+    if(ctx.terr==='montana'){defBonus+=1;defParts.push(['montaña',1]);}
+    if(me&&me.name==='BABILONIA'&&CFG.babWalls&&(HEXMAP[ctx.toKey].capital||S.build[ctx.toKey]==='escuela')){defBonus+=CFG.babWalls;defParts.push(['Murallas de Babilonia',CFG.babWalls]);}
+    if(me&&me.maravillas.some(m=>m.name==='Murallas Inexpugnables'&&(m.hex===ctx.toKey||HEXMAP[ctx.toKey].capital))){defBonus+=3;defParts.push(['Murallas Inexpugnables',3]);}
+  }
+  const flags={noLoot:false,retreat:false,counter:false,scorch:false,vengeance:false,
+               extraKill:false,strFe:false,faithWin:false,eliasMove:false,predmg:0,negDef:false,negTerr:false,sabotage:false};
+  if(tac && !oppTacCancelled){
+    const v=tac.v||0, tl=`«${tac.n}»`;
+    switch(tac.e){
+      case 'str': add(tl,v); break;
+      case 'perhero': add(tl,v*(heroesOff?0:heroes.length)); break;
+      case 'per2': add(tl,v*Math.floor(myUnits/2)); break;
+      case 'perholy': add(tl,v*countHoly(me.id)); break;
+      case 'overflow': add(tl,v*Math.max(0,oppUnits-myUnits)); break;
+      case 'terratk': if(isAtk&&(ctx.terr==='llano'||ctx.terr==='desierto'))add(tl,v); break;
+      case 'citydef': if(!isAtk&&ctx.isCity)add(tl,v); break;
+      case 'ambush': if(!isAtk){add(tl,v); flags.noLoot=true;} break;
+      case 'predmg': flags.predmg=1; break;
+      case 'negterr': flags.negTerr=true; break;
+      case 'negdef': flags.negDef=true; break;
+      case 'retreat': flags.retreat=true; break;
+      case 'counter': flags.counter=true; break;
+      case 'scorch': flags.scorch=true; break;
+      case 'vengeance': flags.vengeance=true; break;
+      case 'extrakill': add(tl,v); flags.extraKill=true; break;
+      case 'strfe': add(tl,v); flags.strFe=true; break;
+      case 'faithwin': flags.faithWin=true; break;
+      case 'eliasmove': flags.eliasMove=true; break;
+      case 'sabotage': flags.sabotage=true; break;
+    }
+  } else if(tac && oppTacCancelled) parts.push([`«${tac.n}» saboteada`,0]);
+  return {str, defBonus, defParts, flags, roll, heroes:heroesOff?0:heroes.length, parts, dieChance};
+}
+// Cálculo completo del combate (sin efectos secundarios). Lo usan la vista previa y doResolve.
+function combatCalc(ctx, atkTac, defTac, atkMir, defMir, preview){
+  const atkP=ctx.atkP, defP=ctx.defP;
+  if(ctx.dec.goliat){ defTac=null; defMir=false; }   // El Desafío de Goliat: el rival no juega Táctica ni Milagro
+  let atkSab=false, defSab=false;
+  if(atkTac&&atkTac.e==='sabotage')defSab=true;
+  if(defTac&&defTac.e==='sabotage')atkSab=true;
+  const A=sideStrength(ctx,'atk',atkTac,atkSab,preview);
+  const Dn=sideStrength(ctx,'def',defTac,defSab,preview);
+  const Ap=A.parts.slice(), Dp=Dn.parts.slice();
+  let dps=Dn.defParts.slice();
+  if((A.flags.negDef||ctx.dec.jericho)&&dps.length){ dps=[]; Dp.push(['defensas anuladas',0]); }
+  if(A.flags.negTerr) dps=dps.filter(x=>x[0]!=='montaña');
+  const defBonus=dps.reduce((t,x)=>t+x[1],0); dps.forEach(x=>Dp.push(x));
+  let atkStr=A.str, defStr=Dn.str+defBonus;
+  if(A.flags.predmg&&defStr>0){ defStr-=1; Dp.push(['golpe previo',-1]); }
+  if(Dn.flags.predmg&&atkStr>0){ atkStr-=1; Ap.push(['golpe previo',-1]); }
+  const ac=atkP.ark?1:2, dc=(defP&&defP.ark)?1:2;
+  const atkMirOk=!!atkMir&&atkP.fe>=ac, defMirOk=!!defMir&&!!defP&&defP.fe>=dc;
+  if(atkMirOk){ atkStr+=2; Ap.push(['Milagro',2]); }
+  if(defMirOk){ defStr+=2; Dp.push(['Milagro',2]); }
+  const atkFe=atkP.fe-(atkMirOk?ac:0), defFe=defP?defP.fe-(defMirOk?dc:0):0;
+  let forcedWinner=null;
+  if(A.flags.faithWin && atkFe>defFe) forcedWinner='atk';
+  if(Dn.flags.faithWin && defFe>atkFe) forcedWinner='def';
+  let diff;
+  if(forcedWinner==='atk')diff=Math.max(1,atkStr-defStr+99);
+  else if(forcedWinner==='def')diff=-(Math.max(1,defStr-atkStr+99));
+  else diff=atkStr-defStr;
+  return {A,Dn,Ap,Dp,atkStr,defStr,diff,atkMirOk,defMirOk,ac,dc,forcedWinner,defTac,
+          dieChance:{atk:A.dieChance,def:Dn.dieChance}};
+}
+// "4 unidades + 1 héroe Josué + 1 dado legendario (5) = 6"
+function fmtParts(parts,total){
+  const shown=parts.filter((x,i)=>i===0||x[1]!==0);
+  const notes=parts.filter((x,i)=>i>0&&x[1]===0).map(x=>x[0]);
+  let t=shown.map((x,i)=> i===0?`${x[1]} ${x[0]}`:`${x[1]<0?'−':'+'} ${Math.abs(x[1])} ${x[0]}`).join(' ');
+  if(total!=null) t+=` = ${total}`;
+  if(notes.length) t+=` (${notes.join(', ')})`;
+  return t;
+}
+function doResolve(ctx, atkTac, defTac, atkMir, defMir){
+  const atkP=ctx.atkP, defP=ctx.defP;
+  if(ctx.dec.goliat&&defTac&&defP) defP.tactics.push(defTac);   // la Táctica vuelve a la mano
+  const X=combatCalc(ctx,atkTac,defTac,atkMir,defMir,false);
+  if(X.atkMirOk) atkP.fe-=X.ac;
+  if(X.defMirOk) defP.fe-=X.dc;
+  // consumir efectos de un solo uso
+  [atkP,defP].forEach(pl=>{ if(pl&&pl._flamPending){pl._flamRound=S.round;pl._flamPending=false;} });
+  if(ctx.dalila){ (ctx.dalila==='def'?atkP:defP)._dalilaUsed=true; }
+  if(ctx.dec.jericho)atkP._jericho=false;
+  if(ctx.dec.goliat)atkP._goliatTid=-1;
+  if(ctx.dec.medos)atkP._medosTid=-1;
+  if(ctx.dec.laquis)atkP._laquisTid=-1;
+  return {ctx,atkTac,defTac:X.defTac,A:X.A,Dn:X.Dn,Ap:X.Ap,Dp:X.Dp,atkStr:X.atkStr,defStr:X.defStr,diff:X.diff,
+          atkMirUsed:X.atkMirOk,defMirUsed:X.defMirOk,roll:X.A.roll,droll:X.Dn.roll,forced:X.forcedWinner};
+}
+function applyResult(R){
+  const {ctx,A,Dn,diff}=R; const atkP=ctx.atkP, defP=ctx.defP;
+  const fromKey=ctx.fromKey,toKey=ctx.toKey;
+  const noLoss=ctx.dec.laquis||ctx.dec.medos;
+  let txt='';
+  if(diff>0){
+    const loss=noLoss?0:Math.floor(diff/2); let surv=ctx.atkUnits-loss; if(surv<1)surv=1;
+    let retreated=false;
+    if(defP && Dn.flags.retreat && !A.flags.sabotage){
+      const dest=neighbors(...toKey.split(',').map(Number)).find(n=>S.control[n.q+','+n.r]===defP.id);
+      if(dest){ const dk=dest.q+','+dest.r; S.units[dk]=(S.units[dk]||0)+(S.units[toKey]||0); retreated=true; }
+    }
+    if(defP && Dn.flags.scorch && !A.flags.sabotage){
+      S.units[fromKey]=ctx.stay+Math.max(0,ctx.atkUnits-loss);
+      delete S.control[toKey]; S.units[toKey]=0; S.scorched[toKey]=S.round+1; delete S.holyTemp[toKey];
+      txt=`<b style="color:#B5462E">Sal sobre Siquem.</b> ${nameOf(toKey)} queda arrasado (neutral, sin producir 1 ronda).`;
+    } else {
+      S.units[fromKey]=ctx.stay;
+      if(ctx.garr)delete S.garrison[toKey];
+      // héroes del defensor que estaban allí huyen a su capital
+      if(defP) defP.heroes.forEach(h=>{ if(h.hex===toKey){ const ck=capitalKey(defP); h.hex=S.control[ck]===defP.id?ck:null; } });
+      if(defP) defP.heroes=defP.heroes.filter(h=>h.hex);
+      S.control[toKey]=atkP.id; S.units[toKey]=surv; delete S.holyTemp[toKey];
+      atkP.heroes.forEach(h=>{if(h.hex===fromKey)h.hex=toKey;});
+      atkP.wins++; if(defP)atkP.winsP=(atkP.winsP||0)+1;
+      if(defP&&!Dn.flags.noLoot){ if(defP.rec>0){defP.rec--;atkP.rec++;} }
+      if(atkP.name==='ASIRIA'&&defP){ atkP.rec+=(CFG.asiLoot==null?1:CFG.asiLoot); }
+      if(CFG.deportOn&&atkP.name==='ASIRIA'&&defP&&!retreated&&(atkP._deportN||0)<(CFG.deportCap==null?99:CFG.deportCap)){ atkP._deportN=(atkP._deportN||0)+1; S.units[toKey]+=1; txt+=' <b>Deportación:</b> 1 cautivo se une a tu ejército.'; }
+      if(A.flags.strFe)atkP.fe++;
+      if(CFG.heroAbilOn){
+        const ids=ctx.atkHeroes.map(h=>h.id);
+        if(ids.includes('josue')) S.holyTemp[toKey]=atkP.id;
+        if(ids.includes('senaquerib')&&defP) atkP.rec++;
+        if(ids.includes('sisac')) atkP.rec++;
+        if(ids.includes('cirohero')&&defP){ const i=defP.reliquias.findIndex(r=>r.lvl===1); if(i>=0){ atkP.reliquias.push(defP.reliquias.splice(i,1)[0]); txt+=' <b>Ciro</b> arrebata una reliquia.'; } }
+        if(ids.includes('holofernes')&&defP&&diff>=3){ const bk=biggestArmyHex(defP.id); if(bk&&S.units[bk]>0)S.units[bk]--; }
+      }
+      if(A.flags.extraKill&&defP&&!A.flags.sabotage){ const bk=biggestArmyHex(defP.id); if(bk&&S.units[bk]>0)S.units[bk]--; }
+      txt=`<b style="color:#3E7C47">¡Victoria!</b> Conquistas ${nameOf(toKey)}. Pierdes ${loss}, entras con ${S.units[toKey]}.`+txt;
+      if(retreated)txt+=' El defensor se retiró a la cueva.';
+    }
+    if(defP && Dn.flags.vengeance && !A.flags.sabotage){
+      const k=S.control[toKey]===atkP.id?toKey:fromKey;
+      S.units[k]=Math.floor((S.units[k]||0)/2);
+      txt+=' <b style="color:#8B1A1A">Las Columnas de Sansón:</b> tu hueste vencedora queda diezmada.';
+    }
+  } else if(diff===0){
+    S.units[fromKey]=ctx.stay+Math.max(0,ctx.atkUnits-1);
+    if(defP)S.units[toKey]=Math.max(0,ctx.defUnits-1);
+    txt=`<b style="color:#B5462E">Empate.</b> Ambos −1 unidad. No conquistas.`;
+  } else {
+    const loss=Math.min(ctx.atkUnits,-diff); S.units[fromKey]=ctx.stay+Math.max(0,ctx.atkUnits-loss);
+    if(defP)S.units[toKey]=Math.max(0,ctx.defUnits-Math.floor((-diff)/2));
+    txt=`<b style="color:#8B1A1A">Derrota.</b> Pierdes ${loss} unidades.`;
+    if(defP && Dn.flags.counter && !A.flags.sabotage && (S.units[fromKey]||0)===0){
+      S.control[fromKey]=defP.id; S.units[fromKey]=1; S.units[toKey]=Math.max(0,(S.units[toKey]||0)-1);
+      atkP.heroes=atkP.heroes.filter(h=>h.hex!==fromKey);
+      txt+=' <b>¡La Quijada de Asno!</b> El defensor toma tu territorio.';
+    }
+    if(Dn.flags.strFe&&defP)defP.fe++;
+    if(defP&&CFG.heroAbilOn&&ctx.defHeroes.some(h=>h.id==='debora')){ defP._bonusAction=(defP._bonusAction||0)+1; txt+=' <b>Débora</b> inspira a su pueblo (+1 acción).'; }
+  }
+  return txt;
+}
+// gasto de acción en combate (La Furia de Senaquerib = ataques gratis)
+function spendCombat(p){ if(p._freeAtk>0)p._freeAtk--; else spend(); }
+
+// ===================== ACCIONES =====================
+function spend(){ S.actionsLeft--; }
+function logE(h){ S.log.unshift(h); if(S.log.length>80)S.log.pop(); if(typeof renderLog==='function')renderLog(); }
+// Caminos Reales: ¿se puede llegar en 2 pasos?
+function roadVia(id,fromKey,toKey){
+  for(const vk of nbKeys(fromKey)){ if(!nbKeys(vk).includes(toKey))continue;
+    const vh=HEXMAP[vk]; if(vh.ark||S.garrison[vk])continue;
+    if(S.control[vk]==null||S.control[vk]===id) return vk; }
+  return null;
+}
+function canReach(id,fromKey,toKey){
+  if(nbKeys(fromKey).includes(toKey)) return true;
+  const p=S.players[id];
+  return CFG.roadsOn&&p.name==='PERSIA'&&!!roadVia(id,fromKey,toKey);
+}
+// n = unidades que se mueven (por defecto, todas). Los héroes acompañan al grupo que se mueve.
+function actMove(fromKey,toKey,n){
+  const p=S.players[S.turn];
+  if(HEXMAP[toKey].ark) return {fail:'El Arca es tierra santa: se toma con el Ritual del Arca.'};
+  if(!canReach(p.id,fromKey,toKey)) return {fail:'Destino fuera de alcance.'};
+  const enemy=(S.control[toKey]!=null&&S.control[toKey]!==S.turn);
+  const garr=S.garrison[toKey];
+  const all=S.units[fromKey]||0; const u=(n==null)?all:Math.max(1,Math.min(all,n));
+  if(enemy||garr) return {combat:true,fromKey,toKey,n:u};
+  if(u<1) return {fail:'No hay unidades que mover.'};
+  S.units[fromKey]=all-u; S.units[toKey]=(S.units[toKey]||0)+u; S.control[toKey]=S.turn;
+  p.heroes.forEach(h=>{if(h.hex===fromKey)h.hex=toKey;});
+  spend(); logE(`${cap(p.name)} mueve ${u} a ${nameOf(toKey)}.`);
+  return {moved:true};
+}
+function actNaval(fromKey,toKey,n){
+  const p=S.players[S.turn];
+  if(!CFG.navalOn||p.name!=='FILISTEA') return {fail:'Solo Filistea navega la costa.'};
+  if(S.control[fromKey]!==S.turn||S.control[toKey]!==S.turn) return {fail:'Ambos territorios deben ser tuyos.'};
+  const a=HEXMAP[fromKey],b=HEXMAP[toKey];
+  if(!isBorder(a.q,a.r)||!isBorder(b.q,b.r)) return {fail:'Ambos territorios deben estar en el borde del mapa.'};
+  if(p._navalUsed) return {fail:'Ya navegaste este turno.'};
+  if(CFG.heroAbilOn&&heroAt(p,'goliat',fromKey)) return {fail:'Goliat es demasiado pesado para las naves.'};
+  const all=S.units[fromKey]||0; if(all<1) return {fail:'No hay unidades allí.'};
+  const u=(n==null)?all:Math.max(1,Math.min(all,n));
+  S.units[fromKey]=all-u; S.units[toKey]=(S.units[toKey]||0)+u;
+  p.heroes.forEach(h=>{if(h.hex===fromKey)h.hex=toKey;});
+  p._navalUsed=true; spend(); logE(`${cap(p.name)} navega la costa: ${u} de ${nameOf(fromKey)} a ${nameOf(toKey)}.`);
+  return {moved:true};
+}
+function recruitCost(p){ return p.name==='ASIRIA'?(CFG.asiRecruitCost||1):2; }
+function actRecruit(key){
+  const p=S.players[S.turn]; const cost=recruitCost(p);
+  if(p.rec<cost) return {fail:'Sin Recursos.'};
+  const n=(CFG.heroAbilOn&&heroAt(p,'sargon',key))?3:2;
+  p.rec-=cost; S.units[key]=(S.units[key]||0)+n; spend();
+  logE(`${cap(p.name)} recluta ${n} en ${nameOf(key)}.`); return {ok:true};
+}
+function cityCost(p){ return p.name==='FILISTEA'?CFG.filisteaCityCost:3; }
+function templeCost(p){ return p.name==='ISRAEL'?CFG.templeCostISR:CFG.templeCost; }
+function schoolCost(p){ return p.name==='BABILONIA'?CFG.schoolBab:CFG.schoolCost; }
+function actBuildCity(key){ const p=S.players[S.turn]; const cc=cityCost(p); if(p.rec<cc)return{fail:'Faltan Recursos.'};
+  p.rec-=cc; S.build[key]='ciudad'; spend(); logE(`${cap(p.name)} erige Ciudad en ${nameOf(key)}.`); return {ok:true}; }
+function actBuildTemple(key,free){ const p=S.players[S.turn]; const c=free?0:templeCost(p); if(p.fe<c)return{fail:'Falta Fe.'};
+  p.fe-=c; S.build[key]='templo'; if(!free)spend(); const r=grantRelic(p);
+  logE(`${cap(p.name)} erige Templo en ${nameOf(key)}${r?` → reliquia <b>${r.name}</b>`:''}.`); return {ok:true,relic:r}; }
+function actBuildSchool(key){ const p=S.players[S.turn]; const c=schoolCost(p);
+  if(p.con<c)return{fail:'Falta Conocimiento.'};
+  p.con-=c; S.build[key]='escuela'; spend(); const r=grantRelic(p);
+  logE(`${cap(p.name)} funda Escuela de Profetas en ${nameOf(key)}${r?` → reliquia <b>${r.name}</b>`:''}.`); return {ok:true,relic:r}; }
+function maxWonders(p){ return p.name==='EGIPTO'?(CFG.egyMaxWonders||3):2; }
+function wonderRec(p,m){ return Math.max(0,m[1]-(p.name==='EGIPTO'?CFG.egyWonderDisc:0)); }
+function actBuildWonder(key,m){ const p=S.players[S.turn]; const wr=wonderRec(p,m); if(p.rec<wr||p.con<m[2])return{fail:'Faltan recursos.'};
+  if(p.maravillas.length>=maxWonders(p))return{fail:'Máximo de Maravillas.'};
+  if(S.players.some(pl=>pl.maravillas.some(x=>x.name===m[0])))return{fail:'Esa Maravilla ya existe.'};
+  p.rec-=wr; p.con-=m[2]; S.build[key]='maravilla'; p.maravillas.push({name:m[0],pv:m[3],eff:m[4],hex:key});
+  spend(); logE(`${cap(p.name)} erige la Maravilla <b>${m[0]}</b>.`); return {ok:true}; }
+function grantRelic(p){ const r=drawRelic(relLevel(S.elias)); if(r)p.reliquias.push(r); return r; }
+function exploreCost(p){ return {con:hasRelic(p,'Sello de Hammurabi')?0:1, fe:D.taccost[band(S.elias)]}; }
+function actExplore(){ const p=S.players[S.turn]; const c=exploreCost(p);
+  if(p.con<c.con)return{fail:'Necesitas 1 Conocimiento.'}; if(p.fe<c.fe)return{fail:`Esa banda exige ${c.fe} Fe.`};
+  const b=band(S.elias); const t=drawTactic(b);
+  p.con-=c.con; p.fe-=c.fe; p.tactics.push(t); spend();
+  logE(`${cap(p.name)} roba una Táctica.`); return {ok:true,tac:t,cost:c.fe}; }
+function actForesee(){ const p=S.players[S.turn]; if(p.con<2)return{fail:'Necesitas 2 Conocimiento.'};
+  p.con-=2; spend(); const next=peekVoz(); logE(`${cap(p.name)} consulta el futuro (Vista).`); return {ok:true,peek:next}; }
+function ritualCost(p,from){ return (CFG.granaryOn&&p.name==='EGIPTO'&&from==='rec')?1:2; }
+function actRitual(kind){ const p=S.players[S.turn];
+  const map={recfe:['rec','fe'],reccon:['rec','con'],ferec:['fe','rec'],conrec:['con','rec'],fecon:['fe','con'],confe:['con','fe']};
+  const[from,to]=map[kind]; const c=ritualCost(p,from); if(p[from]<c)return{fail:'Insuficiente.'};
+  p[from]-=c; p[to]+=1; spend(); logE(`${cap(p.name)} ritual ${from}→${to}.`); return {ok:true}; }
+function holyCtl(id,name){const h=BOARD.hexes.find(x=>x.holy===name);return h&&S.control[h.q+','+h.r]===id;}
+function arkCost(p){ return Math.max(1,CFG.arkFe-(hasRelic(p,'Querubines de Oro')?2:0)); }
+function canArk(id){ if(S.players.some(p=>p.ark))return false; return Object.keys(S.control).some(k=>S.control[k]===id&&HEXMAP[k].holy); }
+function actArk(){ const p=S.players[S.turn]; if(!canArk(p.id))return{fail:'Necesitas controlar una Ciudad Santa.'}; const c=arkCost(p); if(p.fe<c)return{fail:`Necesitas ${c} Fe.`};
+  p.fe-=c; p.ark=true; spend(); logE(`<b>${cap(p.name)} toma EL ARCA.</b>`); return {ok:true}; }
+// Israel — Señor del Tiempo (gratis, 1/ronda). Elías nunca llega a Horeb por una acción.
+function actTime(dir){ const p=S.players[S.turn]; if(!CFG.timeOn||p.name!=='ISRAEL')return{fail:'Solo Israel gobierna el tiempo.'};
+  if(p._timeRound===S.round)return{fail:'Ya moviste a Elías esta ronda.'};
+  if(p.fe<CFG.timeFe)return{fail:`Necesitas ${CFG.timeFe} Fe.`};
+  const ne=Math.max(0,Math.min(12,S.elias+dir)); if(ne===S.elias)return{fail:'Elías no puede moverse ahí.'};
+  S.elias=ne; p.fe-=CFG.timeFe; p._timeRound=S.round; logE(`${cap(p.name)} ${dir>0?'apresura':'demora'} a Elías (${S.elias}).`); return {ok:true}; }
+function actMoses(dir){ const p=S.players[S.turn]; if(!hasHero(p,'moises')||p._mosesUsed)return{fail:'Moisés ya usó su poder.'};
+  const ne=Math.max(0,Math.min(12,S.elias+dir)); if(ne===S.elias)return{fail:'Elías no puede moverse ahí.'};
+  S.elias=ne; p._mosesUsed=true; logE(`Moisés alza la vara: Elías ${S.elias}.`); return {ok:true}; }
+// Filistea — Aquís empuja una unidad enemiga
+function actAquis(enemyKey){ const p=S.players[S.turn]; const aq=p.heroes.find(h=>h.id==='aquis');
+  if(!aq||!CFG.heroAbilOn)return{fail:'Sin Aquís.'}; if(p._aquisRound===S.round)return{fail:'Aquís ya actuó esta ronda.'};
+  const o=S.control[enemyKey]; if(o==null||o===p.id||!(S.units[enemyKey]>0)||!nbKeys(aq.hex).includes(enemyKey))return{fail:'Elige un territorio enemigo adyacente a Aquís.'};
+  const dest=nbKeys(enemyKey).find(k=>S.control[k]==null&&!S.garrison[k]&&!HEXMAP[k].ark);
+  S.units[enemyKey]--; if(dest){S.control[dest]=o;S.units[dest]=(S.units[dest]||0)+1;}
+  p._aquisRound=S.round; logE(`Aquís empuja una unidad de ${nameOf(enemyKey)}.`); return {ok:true}; }
+
+// ===================== DECRETOS =====================
+function decreeDef(name,id){ return (D.decrees[name]||[]).find(d=>d.id===id); }
+function decreeAvailable(p,id){
+  if(!CFG.decreesOn||!p.decrees.includes(id)) return false;
+  if(p._decTid===S.tid) return false;
+  const d=decreeDef(p.name,id); if(!d) return false;
+  return d.band==='S' || (d.band==='T'&&S.elias>=5) || (d.band==='M'&&S.elias>=9);
+}
+function availableDecrees(p){ return p.decrees.filter(id=>decreeAvailable(p,id)); }
+function decreeTargets(p,id){
+  const mine=Object.keys(S.control).filter(k=>S.control[k]===p.id);
+  if(id==='horno'){ const set=new Set(); mine.forEach(k=>nbKeys(k).forEach(n=>{ if(S.control[n]!=null&&S.control[n]!==p.id&&(S.units[n]||0)>0)set.add(n); })); return [...set]; }
+  if(id==='leones') return mine.filter(k=>S.build[k]==='ciudad'||HEXMAP[k].capital);
+  if(id==='dagon') return mine.filter(k=>S.build[k]==='ciudad');
+  if(id==='satrapas'){ const set=new Set(); mine.forEach(k=>nbKeys(k).forEach(n=>{ if(S.control[n]==null&&!S.garrison[n]&&!HEXMAP[n].ark)set.add(n); })); return [...set]; }
+  return null;
+}
+function actDecree(id,arg){
+  const p=S.players[S.turn];
+  if(!decreeAvailable(p,id)) return {fail:'Decreto no disponible.'};
+  const d=decreeDef(p.name,id); let msg='', relic=null;
+  const rivals=S.players.filter(x=>x.id!==p.id);
+  switch(id){
+    case 'mana': p.rec+=2; p.fe+=2; msg='+2 Rec y +2 Fe.'; break;
+    case 'jerico': p._jericho=true; msg='Tu próximo ataque derriba las defensas (+2 Fuerza).'; break;
+    case 'gabaon': S.actionsLeft+=2; msg='+2 acciones este turno.'; break;
+    case 'carros': p._carrosTid=S.tid; msg='+3 Fuerza en tus ataques en llano o desierto este turno.'; break;
+    case 'abundancia': { const g=produce(p); msg=`Producción extra: +${g.rec} Rec, +${g.fe} Fe, +${g.con} Con.`; break; }
+    case 'magos': p._magos=true; msg='Decidirás el destino de la próxima Voz.'; break;
+    case 'babel': { let lost=0; rivals.forEach(r=>{const l=Math.floor(r.con/2); r.con-=l; lost+=l;}); msg=`Los rivales pierden ${lost} Con en total.`; break; }
+    case 'mene': { const lead=rivals.map(r=>({r,pv:score(r)})).sort((a,b)=>b.pv-a.pv)[0].r;
+      if(!lead.reliquias.length){ msg=`${cap(lead.name)} no tiene reliquias.`; break; }
+      let mi=0; lead.reliquias.forEach((x,i)=>{ if(x.lvl<lead.reliquias[mi].lvl)mi=i; });
+      const lostR=lead.reliquias.splice(mi,1)[0]; msg=`${cap(lead.name)} pierde ${lostR.name}.`; break; }
+    case 'horno': { const t=arg||(decreeTargets(p,'horno').sort((a,b)=>(S.units[b]||0)-(S.units[a]||0))[0]);
+      if(!t||!decreeTargets(p,'horno').includes(t)) return {fail:'Elige un territorio enemigo adyacente.'};
+      const k=Math.min(4,S.units[t]||0); S.units[t]-=k; msg=`${k} unidades arden en ${nameOf(t)}.`; break; }
+    case 'leones': { const t=arg||decreeTargets(p,'leones')[0]; if(!t||!decreeTargets(p,'leones').includes(t)) return {fail:'Elige una Ciudad o Capital tuya.'};
+      S.units[t]=(S.units[t]||0)+3; msg=`+3 unidades en ${nameOf(t)}.`; break; }
+    case 'laquis': p._laquisTid=S.tid; msg='Tu próximo ataque contra una plaza fuerte: +3 Fuerza, sin pérdidas si ganas.'; break;
+    case 'furia': p._freeAtk=2; msg='Tus próximos 2 ataques no gastan acción.'; break;
+    case 'herrerias': { let n=0; rivals.forEach(r=>{ if(r.rec>0){r.rec--;n++;} }); p.rec+=n; msg=`Recibes ${n} Rec del hierro filisteo.`; break; }
+    case 'goliat': p._goliatTid=S.tid; msg='Tu próximo combate: el rival sin Táctica ni Milagro, +2 Fuerza.'; break;
+    case 'dagon': { const ts=decreeTargets(p,'dagon'); const ck=capitalKey(p);
+      const t=arg||(S.control[ck]===p.id&&S.build[ck]==='ciudad'?ck:ts[0]); if(!t||!ts.includes(t)) return {fail:'Elige una Ciudad tuya.'};
+      const r=actBuildTemple(t,true); relic=r.relic; msg=`Templo de Dagón en ${nameOf(t)}${relic?` → ${relic.name}`:''}.`; break; }
+    case 'satrapas': { let ts=Array.isArray(arg)?arg:decreeTargets(p,'satrapas').slice(0,2); let n=0;
+      ts.slice(0,2).forEach(t=>{ if(S.control[t]==null&&!S.garrison[t]&&!HEXMAP[t].ark){S.control[t]=p.id;S.units[t]=1;n++;} }); msg=`${n} territorios se someten.`; break; }
+    case 'medos': p._medosTid=S.tid; msg='Tu próximo combate: +3 Fuerza, sin pérdidas si ganas.'; break;
+    case 'ciro': { const g=Math.min(CFG.ciroCap||4,countRegions(p.id)*(CFG.ciroPer||1)); p.pv+=g; msg=`+${g} PV permanentes.`; break; }
+  }
+  p.decrees=p.decrees.filter(x=>x!==id); p._decTid=S.tid;
+  logE(`${cap(p.name)} proclama <b>${d.n}</b>: ${msg}`);
+  return {ok:true,decree:d,msg,relic};
+}
+
+// ===================== JUICIO DE ELÍAS · LA VOZ =====================
+function drawVozIdx(){ if(!S.vozDeck.length){ S.vozDeck=shuffle(S.vozDiscard.splice(0)); } return S.vozDeck.pop(); }
+function peekVoz(){ if(S._vozNext==null)S._vozNext=drawVozIdx(); return D.voz[S._vozNext]; }
+function astroCost(p){ return (CFG.heroAbilOn&&hasHero(p,'daniel'))?1:2; }
+function astroAvailable(p){ return CFG.astroOn&&p&&p.name==='BABILONIA'&&p._astroRound!==S.round&&p.con>=astroCost(p); }
+function astroReroll(p){ if(!astroAvailable(p))return null; p.con-=astroCost(p); p._astroRound=S.round;
+  S.vozDiscard.push(S._vozNext); S._vozNext=null; logE(`Los astrólogos de Babilonia descartan la Voz.`); return peekVoz(); }
+function statOf(p,kind){ return kind==='rec'?p.rec:kind==='fe'?p.fe:kind==='con'?p.con:kind==='terr'?countTerr(p.id):kind==='army'?countArmy(p.id):countHoly(p.id); }
+function findTargets(tgt){
+  const ps=S.players;
+  if(tgt==='all') return ps.map(p=>p.id);
+  if(tgt==='arkholder') return ps.filter(p=>p.ark).map(p=>p.id);
+  let vals;
+  if(tgt==='leader'||tgt==='last') vals=ps.map(p=>score(p));
+  else vals=ps.map(p=>statOf(p,tgt.slice(4)));
+  const want=(tgt==='leader'||tgt.startsWith('max_'))?Math.max(...vals):Math.min(...vals);
+  const ids=ps.filter((p,i)=>vals[i]===want).map(p=>p.id);
+  return CFG.tieAll?ids:[ids[0]];
+}
+function tgtLabel(t){const m={max_rec:'el más rico',min_rec:'el más pobre',max_fe:'el más devoto',min_fe:'el menos devoto',
+  max_con:'el más sabio',min_con:'el menos sabio',max_terr:'el de más territorios',min_terr:'el de menos territorios',max_army:'el mayor ejército',
+  min_army:'el menor ejército',max_holy:'el de más Templos/Ciudades Santas',all:'todos',leader:'el líder en PV',last:'el último en PV',arkholder:'quien tenga el Arca'};return m[t]||t;}
+function plagueShield(p,card){
+  if(p.name==='PERSIA'&&p.plagueImmuneBand!==band(S.elias)){ p.plagueImmuneBand=band(S.elias); return 'Tolerancia persa: ignora esta Plaga.'; }
+  if(p.name==='EGIPTO'&&CFG.nileOn!==false&&/Sequía|Langosta/.test(card.n)) return 'La crecida del Nilo protege a Egipto.';
+  if(p.ark&&S.elias<=8&&card.tgt!=='arkholder') return 'El Arca protege a su pueblo.';
+  if(CFG.heroAbilOn){
+    if(hasHero(p,'david')&&p._davidRound!==S.round){ p._davidRound=S.round; return 'David intercede.'; }
+    if(hasHero(p,'imhotep')&&!p._imhotepUsed){ p._imhotepUsed=true; return 'Imhotep la anula.'; }
+    if(hasHero(p,'ester')&&!p._esterUsed){ p._esterUsed=true; p.fe+=2; return 'Ester intercede (+2 Fe).'; }
+  }
+  const arpa=p.reliquias.find(r=>r.name==='Arpa de David'&&!r.used); if(arpa){arpa.used=true;return 'El Arpa de David la anula.';}
+  const pir=p.maravillas.find(m=>m.name==='Gran Pirámide'&&!m.used); if(pir){pir.used=true;return 'La Gran Pirámide la anula.';}
+  return null;
+}
+function applyFx(p,fx,card){
+  const lvl=relLevel(S.elias); const out=[];
+  fx.forEach(f=>{
+    const m=f.sc?f.v*lvl:f.v;
+    switch(f.t){
+      case 'res': p[f.r]=Math.max(0,p[f.r]+m); out.push(`${m>0?'+':''}${m} ${f.r==='rec'?'Rec':f.r==='fe'?'Fe':'Con'}`); break;
+      case 'pv': p.pv+=m; out.push(`${m>0?'+':''}${m} PV`); break;
+      case 'units': {
+        if(m>0){ const ck=capitalKey(p); let k=S.control[ck]===p.id?ck:biggestArmyHex(p.id);
+          if(k){S.units[k]=(S.units[k]||0)+m; out.push(`+${m} unidades en ${nameOf(k)}`);} }
+        else { const bk=biggestArmyHex(p.id); if(bk){const l=Math.min(S.units[bk]||0,-m); S.units[bk]-=l; out.push(`−${l} unidades en ${nameOf(bk)}`);} }
+        break; }
+      case 'xfer': { const recv=findTargets(f.to).filter(id=>id!==p.id); const amt=Math.min(p[f.r],m);
+        if(!recv.length||amt<=0){out.push('nada que entregar');break;}
+        p[f.r]-=amt; const per=Math.max(1,Math.floor(amt/recv.length)); let left=amt;
+        recv.forEach(id=>{ const g=Math.min(per,left); S.players[id][f.r]+=g; left-=g; });
+        out.push(`entrega ${amt} Rec a ${recv.map(id=>cap(S.players[id].name)).join(', ')}`); break; }
+      case 'perterr': { const n=Math.min(f.max||99,countTerrTerr(p.id,f.terr)); const g=n*f.v; p[f.r]=Math.max(0,p[f.r]+g); out.push(`${g>=0?'+':''}${g} ${f.r==='rec'?'Rec':'Fe'}`); break; }
+      case 'perholy': { const g=countHoly(p.id)*f.v; p[f.r]+=g; out.push(`+${g} Fe`); break; }
+      case 'tac': { for(let i=0;i<f.n;i++)p.tactics.push(drawTactic(band(S.elias))); out.push(`+${f.n} Tácticas`); break; }
+      case 'half': { const l=Math.floor(p[f.r]/2); p[f.r]-=l; out.push(`−${l} Con`); break; }
+      case 'terrloss': { let n=0; Object.keys(S.control).filter(k=>S.control[k]===p.id&&HEXMAP[k].terr===f.terr&&(S.units[k]||0)>=2)
+          .sort((a,b)=>S.units[b]-S.units[a]).slice(0,f.max).forEach(k=>{S.units[k]-=f.v;n++;}); out.push(`−${n} unidades en llano`); break; }
+      case 'spread': { let n=0; Object.keys(S.control).filter(k=>S.control[k]===p.id&&(S.units[k]||0)>0)
+          .sort((a,b)=>S.units[b]-S.units[a]).slice(0,f.n).forEach(k=>{S.units[k]-=f.v;n+=f.v;}); out.push(`−${n} unidades`); break; }
+      case 'discard': { const n=p.tactics.length; p.tactics=[]; out.push(`descarta ${n} Tácticas`); break; }
+      case 'tax': { const l=Math.floor(p[f.r]/f.per); p[f.r]-=l; out.push(`−${l} Rec`); break; }
+      case 'lose1': { const ck=capitalKey(p); const ks=Object.keys(S.control).filter(k=>S.control[k]===p.id&&k!==ck).sort((a,b)=>(S.units[a]||0)-(S.units[b]||0));
+        if(ks[0]){ const k=ks[0]; delete S.control[k]; S.units[k]=0; delete S.holyTemp[k];
+          p.heroes.forEach(h=>{ if(h.hex===k)h.hex=S.control[ck]===p.id?ck:null; }); p.heroes=p.heroes.filter(h=>h.hex);
+          out.push(`pierde ${nameOf(k)}`); } else out.push('sin territorios que perder'); break; }
+    }
+  });
+  return out.join(', ');
+}
+function magosChoice(eg,card){
+  if(S._magosChoice!=null){ const c=S._magosChoice; S._magosChoice=null; return [c]; }
+  if(card.k==='mil') return [eg.id];
+  const r=S.players.filter(p=>p.id!==eg.id).map(p=>({p,pv:score(p)})).sort((a,b)=>b.pv-a.pv)[0];
+  return [r.p.id];
+}
+function aiAstroWants(bab,card){
+  let t=findTargets(card.tgt); if(card.tgt==='arkholder'&&!t.length&&card.fb)t=findTargets(card.fb.tgt);
+  if(card.k==='pla') return t.includes(bab.id);
+  const lead=ranking()[0].p.id;
+  return !t.includes(bab.id) && t.includes(lead) && lead!==bab.id;
+}
+function advanceElias(){
+  const prev=S.elias;
+  let card=peekVoz(), astro=false;
+  const bab=S.players.find(p=>p.name==='BABILONIA');
+  if(bab&&S.ai[bab.id]&&astroAvailable(bab)&&aiAstroWants(bab,card)){ card=astroReroll(bab); astro=true; }
+  S.vozDiscard.push(S._vozNext); S._vozNext=null;
+  S.elias=Math.min(13,S.elias+(CFG.clockEco?(card.eco||1):1));
+  let targets=findTargets(card.tgt), fx=card.fx;
+  if(card.tgt==='arkholder'&&!targets.length&&card.fb){ targets=findTargets(card.fb.tgt); fx=card.fb.fx; }
+  const eg=S.players.find(p=>p._magos);
+  let magos=false; if(eg){ eg._magos=false; targets=magosChoice(eg,card); magos=true; }
+  const effs=targets.map(id=>{ const p=S.players[id];
+    if(card.k==='pla'){ const sh=plagueShield(p,card); if(sh) return {id,txt:sh,shield:true}; }
+    return {id,txt:applyFx(p,fx,card)}; });
+  return {prev,card,targets,effs,astro,magos};
+}
+
+// ===================== IA (heurística para playtest) =====================
+function aiTakeTurn(){
+  const p=S.players[S.turn];
+  aiPreTurn(p);
+  let guard=0;
+  while(S.actionsLeft>0 && guard<24){ guard++; if(!aiOneAction(p)) break; }
+}
+function aiPreTurn(p){
+  // Israel — Señor del Tiempo + Moisés
+  if(p.name==='ISRAEL'&&CFG.timeOn){
+    const rk=ranking(); const me=score(p); const lead=rk[0].p.id===p.id;
+    const bestOther=Math.max(...S.players.filter(x=>x.id!==p.id).map(x=>score(x)));
+    if(lead&&me-bestOther>=3&&S.elias>=7) actTime(+1);
+    else if(!lead&&bestOther-me>=5&&S.elias>=8) actTime(-1);
+    if(hasHero(p,'moises')&&!p._mosesUsed&&S.elias>=8){ if(lead&&me-bestOther>=3)actMoses(+1); else if(!lead&&bestOther-me>=5)actMoses(-1); }
+  }
+  // Decretos económicos al inicio del turno
+  if(!CFG.decreesOn) return;
+  const av=availableDecrees(p); if(!av.length) return;
+  const rivals=S.players.filter(x=>x.id!==p.id);
+  const pick=(id,cond)=>{ if(av.includes(id)&&cond()){ actDecree(id); return true; } return false; };
+  if(pick('gabaon',()=>true))return; if(pick('abundancia',()=>true))return; if(pick('mana',()=>true))return;
+  if(pick('herrerias',()=>true))return; if(pick('magos',()=>true))return;
+  if(pick('ciro',()=>countRegions(p.id)>=3))return;
+  if(pick('dagon',()=>decreeTargets(p,'dagon').length>0))return;
+  if(pick('leones',()=>decreeTargets(p,'leones').length>0&&S.round>=2))return;
+  if(pick('satrapas',()=>decreeTargets(p,'satrapas').length>=1))return;
+  if(pick('babel',()=>rivals.reduce((s,r)=>s+r.con,0)>=10))return;
+  if(pick('mene',()=>{const l=rivals.map(r=>({r,pv:score(r)})).sort((a,b)=>b.pv-a.pv)[0].r; return l.reliquias.length>0;}))return;
+  if(pick('horno',()=>{const t=decreeTargets(p,'horno'); return t.some(k=>(S.units[k]||0)>=2);}))return;
+  if(pick('furia',()=>!!findAttack(p.id)))return;
+}
+function aiOneAction(p){
+  const me=p.id;
+  if(canArk(me)&&p.fe>=arkCost(p)){ const r=actArk(); if(r.ok)return true; }
+  // con ataques gratis, atacar primero
+  if(p._freeAtk>0){ const atk=findAttack(me); if(atk){ const r=actMove(atk.from,atk.to); if(r.combat)return aiCombat(r); } }
+  const myTerr=Object.keys(S.control).filter(k=>S.control[k]===me);
+  const army=countArmy(me);
+  const cityKeys=myTerr.filter(k=>S.build[k]==='ciudad'||HEXMAP[k].capital);
+  const plainTerr=myTerr.filter(k=>!S.build[k]);
+  const cityNoTemple=myTerr.filter(k=>S.build[k]==='ciudad'&&!HEXMAP[k].capital);
+  const buildable=plainTerr.concat(cityNoTemple);
+  const relTarget=Math.max(2,Math.floor(myTerr.length/2));
+  const needRelics = p.reliquias.length < relTarget;
+  const tCost=templeCost(p), sCost=schoolCost(p);
+  if(cityKeys.length&&army<myTerr.length+2&&p.rec>=recruitCost(p)){ const k=cityKeys.find(x=>heroAt(p,'sargon',x))||cityKeys[0]; const r=actRecruit(k); if(r.ok)return true; }
+  // Babilonia prioriza Escuelas (Zigurats del Saber)
+  if(p.name==='BABILONIA'&&buildable.length&&p.con>=sCost&&countSchools(me)<3){ const r=actBuildSchool(buildable[0]); if(r.ok)return true; }
+  if(needRelics && buildable.length){
+    const slot=buildable[0];
+    if((p.fe-tCost)>=(p.con-sCost)){
+      if(p.fe>=tCost){ const r=actBuildTemple(slot); if(r.ok)return true; }
+      if(p.con>=sCost){ const r=actBuildSchool(slot); if(r.ok)return true; }
+    } else {
+      if(p.con>=sCost){ const r=actBuildSchool(slot); if(r.ok)return true; }
+      if(p.fe>=tCost){ const r=actBuildTemple(slot); if(r.ok)return true; }
+    }
+  }
+  if(CFG.aiHeroesOn && cityKeys.length && p.heroes.length<CFG.aiHeroMax){
+    const roster=D.heroes[p.name]||[]; const have=new Set(p.heroes.map(h=>h.name));
+    const cands=roster.filter(h=>!have.has(h[0]) && h[1]>0 && p.con>=h[1]+1);
+    const aff=cands.sort((a,b)=>(b[2]/b[1])-(a[2]/a[1]))[0];
+    if(aff){ p.con-=aff[1]; p.heroes.push({name:aff[0],bonus:aff[2],hex:cityKeys[0],id:aff[4]}); spend();
+      logE(`${cap(p.name)} recluta al héroe <b>${aff[0]}</b>.`); return true; }
+  }
+  // Egipto: Maravillas antes de expandirse
+  if(p.name==='EGIPTO'){ const w=aiWonder(p,buildable); if(w)return true; }
+  const expand=findExpansion(me);
+  if(expand){ const r=actMove(expand.from,expand.to); if(r.moved)return true; }
+  const atk=findAttack(me);
+  if(atk){ const r=actMove(atk.from,atk.to); if(r.combat)return aiCombat(r); }
+  if(buildable.length && p.reliquias.length<relTarget+2){
+    const slot=buildable[0];
+    if(p.con>=sCost+2){ const r=actBuildSchool(slot); if(r.ok)return true; }
+    if(p.fe>=tCost+2){ const r=actBuildTemple(slot); if(r.ok)return true; }
+  }
+  if(aiWonder(p,buildable))return true;
+  if(plainTerr.length&&p.rec>=cityCost(p)){ const r=actBuildCity(plainTerr[0]); if(r.ok)return true; }
+  const ec=exploreCost(p);
+  if(p.con>=ec.con+1&&p.fe>=ec.fe&&p.tactics.length<4){ const r=actExplore(); if(r.ok)return true; }
+  if(p.rec>=6&&p.con<4){ const r=actRitual('reccon'); if(r.ok)return true; }
+  if(p.fe>=6&&p.rec<4){ const r=actRitual('ferec'); if(r.ok)return true; }
+  if(cityKeys.length&&p.rec>=recruitCost(p)){ const r=actRecruit(cityKeys[0]); if(r.ok)return true; }
+  return false;
+}
+function aiWonder(p,buildable){
+  if(p.maravillas.length>=maxWonders(p)||!buildable.length) return false;
+  const taken=new Set(); S.players.forEach(pl=>pl.maravillas.forEach(m=>taken.add(m.name)));
+  let pool=D.marav.filter(m=>!taken.has(m[0])&&p.rec>=wonderRec(p,m)&&p.con>=m[2]);
+  if(CFG.egyWallsFirst&&p.name==='EGIPTO')pool=pool.slice().sort((a,b)=>(b[0]==='Murallas Inexpugnables')-(a[0]==='Murallas Inexpugnables'));
+  const aff=pool[0];
+  if(aff){ const r=actBuildWonder(buildable[0],aff); if(r.ok)return true; }
+  // Granero del Faraón: convertir Rec→Con 1:1 si eso completa una Maravilla
+  if(CFG.granaryOn&&p.name==='EGIPTO'){ const near=D.marav.find(m=>!taken.has(m[0])&&p.con<m[2]&&p.rec-(m[2]-p.con)>=m[1]);
+    if(near){ const r=actRitual('reccon'); if(r.ok)return true; } }
+  return false;
+}
+function findExpansion(me){
+  let best=null,bv=-1;
+  const p=S.players[me];
+  for(const k in S.control){ if(S.control[k]!==me||(S.units[k]||0)<2)continue;
+    for(const nk of nbKeys(k)){ const nb=HEXMAP[nk];
+      if(S.control[nk]==null&&!S.garrison[nk]&&!nb.ark){
+        let val=nb.terr==='fertil'?2:1; if(val>bv){bv=val;best={from:k,to:nk};} } }
+  }
+  if(best||!(CFG.roadsOn&&p.name==='PERSIA')) return best;
+  // Caminos Reales: buscar a 2 pasos
+  for(const k in S.control){ if(S.control[k]!==me||(S.units[k]||0)<2)continue;
+    for(const vk of nbKeys(k)) for(const nk of nbKeys(vk)){ const nb=HEXMAP[nk];
+      if(nk===k||S.control[nk]!=null||S.garrison[nk]||nb.ark)continue;
+      if(roadVia(me,k,nk)){ let val=nb.terr==='fertil'?2:1; if(val>bv){bv=val;best={from:k,to:nk};} } } }
+  return best;
+}
+function findAttack(me){
+  let best=null,bestEdge=-99; const p=S.players[me];
+  for(const k in S.control){ if(S.control[k]!==me||(S.units[k]||0)<3)continue;
+    const myU=S.units[k];
+    for(const nk of nbKeys(k)){ const nb=HEXMAP[nk]; if(nb.ark)continue;
+      let defU=null;
+      if(S.garrison[nk])defU=S.garrison[nk];
+      else if(S.control[nk]!=null&&S.control[nk]!==me){ defU=S.units[nk]||0; if(CFG.satrapOn&&S.players[S.control[nk]].name==='PERSIA')defU=Math.max(defU,CFG.satrapMin); }
+      if(defU==null)continue;
+      const ironEdge=p.name==='FILISTEA'?1:0;
+      const owner=S.control[nk]!=null?S.players[S.control[nk]]:null;
+      const walls=(owner&&owner.name==='BABILONIA'&&CFG.babWalls&&(nb.capital||S.build[nk]==='escuela'))?CFG.babWalls:0;
+      const edge=myU-defU-walls-(nb.terr==='montana'?1:0)+(nb.holy?1.5:0)+ironEdge+(p.name==='ASIRIA'?0.5:0);
+      if(edge>(p.name==='ASIRIA'?CFG.asiAggro:1) && edge>bestEdge){ bestEdge=edge; best={from:k,to:nk}; }
+    }
+  }
+  return best;
+}
+function aiCombat(r){
+  const p=S.players[S.turn];
+  // decretos de combate
+  if(CFG.decreesOn){ const av=availableDecrees(p); const toHx=HEXMAP[r.toKey];
+    const isCity=S.build[r.toKey]==='ciudad'||toHx.capital||!!S.garrison[r.toKey];
+    if(av.includes('jerico'))actDecree('jerico');
+    else if(av.includes('laquis')&&isCity)actDecree('laquis');
+    else if(av.includes('carros')&&(toHx.terr==='llano'||toHx.terr==='desierto'))actDecree('carros');
+    else if(av.includes('goliat'))actDecree('goliat');
+    else if(av.includes('medos'))actDecree('medos'); }
+  // Aquís debilita al defensor
+  if(CFG.heroAbilOn&&hasHero(p,'aquis')&&p._aquisRound!==S.round&&S.control[r.toKey]!=null&&S.control[r.toKey]!==p.id){
+    const aq=p.heroes.find(h=>h.id==='aquis'); if(nbKeys(aq.hex).includes(r.toKey)) actAquis(r.toKey); }
+  const ctx=combatCtx(r.fromKey,r.toKey);
+  if(ctx.atkUnits<2)return false;
+  const atkTac=aiPickTactic(ctx.atkP,'atk',ctx);
+  const defTac=(ctx.defP&&!ctx.dec.goliat)?aiPickTactic(ctx.defP,'def',ctx):null;
+  const A0=sideStrength(ctx,'atk',atkTac,false).str;
+  const D0=sideStrength(ctx,'def',defTac,false).str+(ctx.terr==='montana'?1:0);
+  ctx.atkP._flamPending=false; if(ctx.defP)ctx.defP._flamPending=false;
+  const atkMir=(ctx.atkP.fe>=2 && A0<=D0+1);
+  const defMir=(ctx.defP&&ctx.defP.fe>=2&&D0<A0);
+  if(atkTac)ctx.atkP.tactics.splice(ctx.atkP.tactics.indexOf(atkTac),1);
+  if(defTac)ctx.defP.tactics.splice(ctx.defP.tactics.indexOf(defTac),1);
+  const R=doResolve(ctx,atkTac,defTac,atkMir,defMir);
+  applyResult(R); spendCombat(p);
+  return true;
+}
+function aiPickTactic(p,side,ctx){
+  if(!p.tactics.length)return null;
+  let best=null,bv=-1;
+  p.tactics.forEach(t=>{ const s=sideStrength(ctx,side,t,false).str; if(s>bv){bv=s;best=t;} });
+  p._flamPending=false;
+  return best;
+}
+
+// ===================== FIN DE RONDA (motor puro) =====================
+// El maná que se guarda se agusana (Éx 16:20): tope de Recursos tras la Producción
+function applyStoreCap(){ const lost={}; if(!CFG.storeCap)return lost;
+  S.players.forEach(p=>{ if(p.rec>CFG.storeCap){ lost[p.id]=p.rec-CFG.storeCap; p.rec=CFG.storeCap; } }); return lost; }
+function roundEnd(){
+  S.players.forEach(produce);
+  applyStoreCap();
+  const cu=applyCatchup();
+  const J=advanceElias();
+  S.round++;
+  const over=S.elias>=13||S.round>CFG.maxRounds;
+  return {cu,J,over};
+}
+
+// ===================== SIMULACIÓN MASIVA =====================
+function simulateGames(nGames,nPlayers,facList){
+  // facList==='random': cada partida usa facciones al azar (como la mesa real de 4-5 jugadores);
+  // stats.games[f] cuenta en cuántas partidas participó cada facción
+  const stats={wins:{},pvTot:{},games:{},rounds:0,horeb:0,tormenta:0,decrees:0,arks:0};
+  const rnd=facList==='random';
+  D.factions.forEach(f=>{stats.wins[f.name]=0;stats.pvTot[f.name]=0;stats.games[f.name]=0;});
+  for(let g=0; g<nGames; g++){
+    const fl=rnd?shuffle(D.factions.map(f=>f.name)).slice(0,nPlayers):facList;
+    newGame(nPlayers, new Array(nPlayers).fill(true), fl);
+    S.players.forEach(p=>stats.games[p.name]++);
+    let guard=0;
+    while(guard<3000){ guard++;
+      aiTakeTurn();
+      S.turn++;
+      if(S.turn>=S.players.length){ S.turn=0; const E=roundEnd(); if(E.over)break; }
+      beginTurn();
+    }
+    stats.rounds+=S.round-1; if(S.elias>=13)stats.horeb++; if(S.elias>=9)stats.tormenta++;
+    horebJudgment();
+    S.players.forEach(p=>{ stats.decrees+=3-p.decrees.length; if(p.ark)stats.arks++; });
+    if(!stats.bd)stats.bd={}; S.players.forEach(p=>{ const b=scoreBreakdown(p); const t=stats.bd[p.name]||(stats.bd[p.name]={}); for(const k in b)t[k]=(t[k]||0)+b[k];
+      t.res_rec=(t.res_rec||0)+p.rec; t.res_fe=(t.res_fe||0)+p.fe; t.res_con=(t.res_con||0)+p.con; t.marN=(t.marN||0)+p.maravillas.length; t.relN=(t.relN||0)+p.reliquias.length; t.wins_=(t.wins_||0)+p.wins; t.her=(t.her||0)+p.heroes.length; });
+    const rk=ranking(); stats.wins[rk[0].p.name]++;
+    rk.forEach(r=>stats.pvTot[r.p.name]+=r.pv);
+  }
+  stats.nGames=nGames; stats.avgRounds=(stats.rounds/nGames).toFixed(2);
+  // % de victorias sobre las partidas jugadas por cada facción (ideal = 100/nJugadores)
+  stats.pct={}; stats.pvAvg={};
+  for(const n in stats.games){ if(!stats.games[n]){ delete stats.wins[n]; delete stats.pvTot[n]; continue; }
+    stats.pct[n]=100*stats.wins[n]/stats.games[n]; stats.pvAvg[n]=stats.pvTot[n]/stats.games[n]; }
+  return stats;
+}
+
+// ===================== UI v4.0 =====================
+let chosenCount=6, chosenMode='ai', chosenFac='ISRAEL';
+(function(){
+  const row=document.getElementById('pcountrow');
+  [4,5,6].forEach(n=>{ const d=document.createElement('div'); d.className='pcount'+(n===6?' sel':''); d.textContent=n;
+    d.onclick=()=>{chosenCount=n;[...row.children].forEach(c=>c.classList.remove('sel'));d.classList.add('sel');}; row.appendChild(d); });
+  const mr=document.getElementById('moderow');
+  [['ai','Yo contra la IA'],['hot','Hotseat (todos humanos)']].forEach(([k,l])=>{ const d=document.createElement('div'); d.className='modebtn'+(k==='ai'?' sel':''); d.textContent=l;
+    d.onclick=()=>{chosenMode=k;[...mr.children].forEach(c=>c.classList.remove('sel'));d.classList.add('sel');document.getElementById('facpick').style.display=k==='ai'?'':'none';}; mr.appendChild(d); });
+  const fr=document.getElementById('facrow');
+  D.factions.forEach(f=>{ const d=document.createElement('div'); d.className='facbtn'+(f.name===chosenFac?' sel':''); d.style.borderColor=f.color;
+    d.innerHTML=`<span style="background:${f.color}"></span>${cap(f.name)}<small>${D.fac[f.name].epithet}</small>`;
+    d.onclick=()=>{chosenFac=f.name;[...fr.children].forEach(c=>c.classList.remove('sel'));d.classList.add('sel');}; fr.appendChild(d); });
+})();
+
+function startGame(force){
+  if(!force&&readSave()){ showCard('combat','Hay una partida guardada','¿Empezar otra?',
+    `<div class="infoline">Empezar una partida nueva <b>borrará</b> la partida guardada.</div><button class="optbtn" onclick="closeModal();startGame(true)">Sí, empezar una nueva</button><button class="optbtn" onclick="closeModal();resumeGame()">No, continuar la guardada</button><button class="ghostbtn" onclick="closeModal()">Cancelar</button>`,{dismissible:true}); return; }
+  clearSave();
+  let names=D.factions.map(f=>f.name);
+  if(chosenCount<6){ const keep=chosenMode==='ai'?[chosenFac]:[]; const rest=shuffle(names.filter(n=>!keep.includes(n))); names=names.filter(n=>keep.includes(n)||rest.slice(0,chosenCount-keep.length).includes(n)); }
+  const ai=names.map(n=>chosenMode==='ai'?n!==chosenFac:false);
+  newGame(names.length, ai, names);
+  showGameUI();
+  drawBoard(); refreshTop(); renderSheet(); renderLog();
+  logE('<b>Comienza la partida.</b> '+names.map(cap).join(', ')+'.');
+  saveGame(); centerOnTurn(true);
+  if(S.ai[S.turn]) setTimeout(runAITurn,300);
+  else if(chosenMode==='ai') setTimeout(()=>showFaction(S.players[S.turn],true),200);
+}
+function showGameUI(){
+  document.getElementById('setup').classList.add('hidden'); document.getElementById('winner').classList.add('hidden');
+  ['topbar','boardwrap','sheet','fablog'].forEach(id=>document.getElementById(id).classList.remove('hidden'));
+}
+
+// ===================== GUARDADO AUTOMÁTICO =====================
+// Se guarda al empezar cada turno (tras el turno anterior). Si cierras en mitad del Juicio,
+// al continuar se reanuda desde el último turno guardado.
+const SAVE_KEY='pacto_eterno_v41_save';
+function saveGame(){ if(!S)return;
+  try{ const data={v:'4.1',ts:Date.now(),mode:chosenMode,fac:chosenFac,
+      S:JSON.parse(JSON.stringify(S,(k,v)=>(k==='_combat'||k==='_mv'||k==='_cont')?undefined:v))};
+    data.S.sel=null; data.S.pending=null; data.S.moveFrom=null;
+    localStorage.setItem(SAVE_KEY,JSON.stringify(data)); }catch(e){} }
+function readSave(){ try{ const t=localStorage.getItem(SAVE_KEY); if(!t)return null; const d=JSON.parse(t); return (d&&d.S&&d.S.players)?d:null; }catch(e){ return null; } }
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+function refreshResume(){
+  const box=document.getElementById('resumebox'); if(!box)return; const d=readSave();
+  if(!d){ box.style.display='none'; box.innerHTML=''; return; }
+  const P=d.S.players[d.S.turn]; const when=new Date(d.ts);
+  const hum=d.S.players.filter((p,i)=>!d.S.ai[i]).map(p=>cap(p.name)).join(', ')||'—';
+  box.style.display='';
+  box.innerHTML=`<button class="bigbtn" onclick="resumeGame()">▶ CONTINUAR PARTIDA</button>
+    <div class="flav">Ronda ${d.S.round} · Elías ${d.S.elias} · turno de ${cap(P.name)} · juegas con ${hum}<br>guardada ${when.toLocaleDateString()} ${when.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · <a href="#" style="color:#C9A84C" onclick="discardSave();return false;">descartar</a></div>`;
+}
+function discardSave(){ showCard('combat','¿Descartar la partida guardada?','No se puede deshacer',
+  `<button class="optbtn" onclick="clearSave();closeModal();refreshResume()">Sí, descartarla</button><button class="ghostbtn" onclick="closeModal()">No</button>`,{dismissible:true}); }
+function resumeGame(){
+  const d=readSave(); if(!d){ toast('No hay partida guardada.'); refreshResume(); return; }
+  S=d.S; chosenMode=d.mode||'ai'; chosenFac=d.fac||chosenFac;
+  S._combat=null; S._cont=null; S._mv=null; S.sel=null; S.pending=null; S.moveFrom=null;
+  showGameUI(); drawBoard(); refreshTop(); renderSheet(); renderLog();
+  logE('<b>Partida reanudada.</b>'); centerOnTurn(true);
+  if(S.ai[S.turn]) setTimeout(runAITurn,400);
+  else toast('Turno de '+cap(S.players[S.turn].name));
+}
+function inGame(){ return !!S && document.getElementById('setup').classList.contains('hidden') && document.getElementById('winner').classList.contains('hidden'); }
+function newGamePrompt(){
+  if(inGame()){
+    showCard('combat','¿Empezar una partida nueva?','La partida actual está guardada',
+      `<div class="infoline">Si empiezas otra, la partida en curso <b>se borrará</b> al comenzar la nueva. Puedes volver a ella con «Continuar» mientras no empieces otra.</div>
+       <button class="optbtn" onclick="closeModal();backToSetup()">Ir al menú de nueva partida</button><button class="ghostbtn" onclick="closeModal()">Seguir jugando</button>`,{dismissible:true});
+  } else backToSetup();
+}
+function backToSetup(){
+  if(inGame()) saveGame();
+  closeModal(); document.getElementById('log').classList.remove('open');
+  ['topbar','boardwrap','sheet','fablog','winner'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('setup').classList.remove('hidden'); refreshResume();
+}
+window.addEventListener('load',refreshResume);
+
+// ===================== ENCUADRE =====================
+// Centra el tablero en un territorio (por defecto, la capital del jugador humano en turno)
+function centerOnKey(key,anim){
+  const wrap=document.getElementById('boardwrap'), svg=document.getElementById('boardsvg'), hx=HEXMAP[key]; if(!hx||!wrap.clientWidth)return;
+  const minS=Math.min((wrap.clientWidth-10)/BW,(wrap.clientHeight-10)/BH);
+  pz.scale=Math.max(pz.scale,Math.min(1,Math.max(minS,.62)));
+  pz.tx=wrap.clientWidth/2-hx.x*pz.scale; pz.ty=wrap.clientHeight/2-hx.y*pz.scale;
+  if(anim){ svg.style.transition='transform .35s ease'; setTimeout(()=>{svg.style.transition='';},400); }
+  applyPZ();
+}
+function centerOnTurn(anim){ const p=S.players[S.turn]; if(S.ai[S.turn])return;
+  const ck=capitalKey(p); let k=S.control[ck]===p.id?ck:biggestArmyHex(p.id); if(!k)k=ck;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>centerOnKey(k,anim))); }
+
+const SIZE=BOARD.size;
+function hexPoints(cx,cy){let p=[];for(let i=0;i<6;i++){const a=Math.PI/180*(60*i-30);p.push((cx+SIZE*Math.cos(a)).toFixed(1)+','+(cy+SIZE*Math.sin(a)).toFixed(1));}return p.join(' ');}
+function lighten(hex,f){hex=hex.replace('#','');let r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f);return `rgb(${r},${g},${b})`;}
+const TER_F={llano:.34,fertil:.44,montana:.14,desierto:.52};
+const TER_GLYPH={montana:'▲',fertil:'🌾',desierto:'🏜',llano:''};
+let BW,BH;
+function drawBoard(){
+  const xs=BOARD.hexes.map(h=>h.x),ys=BOARD.hexes.map(h=>h.y);
+  BW=Math.max(...xs)+SIZE+10; BH=Math.max(...ys)+SIZE+10;
+  const svg=document.getElementById('boardsvg'); svg.setAttribute('viewBox',`0 0 ${BW} ${BH}`); svg.setAttribute('width',BW); svg.setAttribute('height',BH);
+  const used=new Set(S.players.map(p=>REGION_OF[p.name]));
+  let h='';
+  BOARD.hexes.forEach(hx=>{ const key=hx.q+','+hx.r; let fill,stroke='#6b5410',sw=1.2;
+    if(hx.ark){fill='#f0e2b0';stroke='#C9A84C';sw=2.5;} else if(hx.holy){fill='#f5e6bd';stroke='#C9A84C';sw=2;}
+    else if(hx.region==='S'){fill='#efe2bf';stroke='#C9A84C';sw=1.6;}
+    else if(!used.has(hx.region)){fill=lighten('#7a7466',TER_F[hx.terr]);}
+    else {fill=lighten(BOARD.factions[hx.region].color,TER_F[hx.terr]);}
+    h+=`<polygon class="hex" data-k="${key}" points="${hexPoints(hx.x,hx.y)}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+    if(hx.ark){ h+=`<rect x="${hx.x-15}" y="${hx.y-12}" width="30" height="19" rx="3" fill="#C9A84C" stroke="#8B6914" pointer-events="none"/>`;
+      h+=`<text class="hlabel" x="${hx.x}" y="${hx.y+18}" font-size="9" font-weight="700" fill="#5a3d08" text-anchor="middle" pointer-events="none">ARCA</text>`; }
+    else { const nm=hx.holy||hx.name||'Senda'; const fs=hx.capital?9:hx.holy?8.5:7.5; const col=hx.holy?'#8B1A1A':'#241b0e'; const fw=(hx.capital||hx.holy)?'800':'600';
+      h+=`<text class="hlabel" x="${hx.x}" y="${hx.y-2}" font-size="${fs}" font-weight="${fw}" fill="${col}" text-anchor="middle" pointer-events="none">${nm}</text>`;
+      if(TER_GLYPH[hx.terr]&&!hx.holy) h+=`<text x="${hx.x+15}" y="${hx.y-10}" font-size="8" fill="#3a2a0c" opacity=".55" text-anchor="middle" pointer-events="none">${TER_GLYPH[hx.terr]}</text>`; }
+    if(hx.capital) h+=`<circle cx="${hx.x}" cy="${hx.y-14}" r="3" fill="#2a2012" pointer-events="none"/>`;
+  });
+  h+='<g id="unitlayer"></g>'; svg.innerHTML=h;
+  svg.querySelectorAll('.hex').forEach(el=>el.addEventListener('click',()=>onHexTap(el.dataset.k)));
+  drawUnits(); setupPanZoom();
+}
+function drawUnits(){
+  let h='';
+  for(const key in S.control){ const pid=S.control[key]; const p=S.players[pid]; const hx=HEXMAP[key]; const n=S.units[key]||0;
+    h+=`<circle cx="${hx.x}" cy="${hx.y+12}" r="8" fill="${p.color}" stroke="#fff" stroke-width="1.5" pointer-events="none"/>`;
+    if(n>0)h+=`<text x="${hx.x}" y="${hx.y+15.5}" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle" pointer-events="none">${n}</text>`;
+    const b=S.build[key]; if(b){const sym=b==='ciudad'?'🏠':b==='templo'?'✚':b==='escuela'?'❖':'★'; h+=`<text x="${hx.x+13}" y="${hx.y+16}" font-size="12" fill="#3a2a0c" pointer-events="none">${sym}</text>`;}
+    if(p.heroes.some(hr=>hr.hex===key))h+=`<text x="${hx.x-15}" y="${hx.y+16}" font-size="12" pointer-events="none">⚜</text>`;
+    if(p.ark&&HEXMAP[key].capital)h+=`<text x="${hx.x}" y="${hx.y-16}" font-size="11" text-anchor="middle" pointer-events="none">🕎</text>`;
+    if(S.holyTemp[key]===pid)h+=`<text x="${hx.x+13}" y="${hx.y+4}" font-size="9" fill="#8B1A1A" pointer-events="none">✦</text>`;
+  }
+  for(const key in S.scorched){ if(S.scorched[key]>=S.round){ const hx=HEXMAP[key]; h+=`<text x="${hx.x}" y="${hx.y-12}" font-size="11" text-anchor="middle" pointer-events="none">🔥</text>`; } }
+  for(const key in S.garrison){ const hx=HEXMAP[key]; const f=S.garrison[key];
+    if(S.control[key]==null){ h+=`<circle cx="${hx.x}" cy="${hx.y+12}" r="8" fill="#555" stroke="#ccc" stroke-width="1.5" pointer-events="none"/>`;
+      h+=`<text x="${hx.x}" y="${hx.y+15.5}" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle" pointer-events="none">${f}</text>`; } }
+  const ul=document.getElementById('unitlayer'); if(ul)ul.innerHTML=h;
+}
+function moveTargets(fromKey){ const out=new Set(nbKeys(fromKey)); const p=S.players[S.turn];
+  if(CFG.roadsOn&&p.name==='PERSIA') nbKeys(fromKey).forEach(v=>nbKeys(v).forEach(k=>{ if(k!==fromKey&&canReach(p.id,fromKey,k))out.add(k); }));
+  return [...out]; }
+function highlight(){
+  document.querySelectorAll('.hex').forEach(e=>e.classList.remove('hexsel','hexmove','hexatk','hexpick'));
+  if(S.sel){const el=document.querySelector(`.hex[data-k="${S.sel}"]`);if(el)el.classList.add('hexsel');}
+  if(S.pending==='move_to'&&S.moveFrom){
+    moveTargets(S.moveFrom).forEach(k=>{const el=document.querySelector(`.hex[data-k="${k}"]`);if(!el)return;
+      const enemy=(S.control[k]!=null&&S.control[k]!==S.turn)||S.garrison[k]; if(HEXMAP[k].ark)return; el.classList.add(enemy?'hexatk':'hexmove');}); }
+  else if(S.pending){ validTargets().forEach(k=>{const el=document.querySelector(`.hex[data-k="${k}"]`);if(el)el.classList.add('hexpick');}); }
+}
+let pz={scale:1,tx:0,ty:0};
+function applyPZ(){document.getElementById('boardsvg').style.transform=`translate(${pz.tx}px,${pz.ty}px) scale(${pz.scale})`;}
+function setupPanZoom(){
+  const wrap=document.getElementById('boardwrap');const svg=document.getElementById('boardsvg');svg.style.transformOrigin='0 0';
+  const fit=Math.min((wrap.clientWidth-10)/BW,1.1); pz.scale=fit; pz.tx=(wrap.clientWidth-BW*fit)/2; pz.ty=6; applyPZ();
+  let last=null,pinch=null,moved=false;
+  wrap.ontouchstart=e=>{moved=false;if(e.touches.length===1)last={x:e.touches[0].clientX,y:e.touches[0].clientY};else if(e.touches.length===2)pinch=dist(e.touches);};
+  wrap.ontouchmove=e=>{if(e.touches.length===1&&last){const dx=e.touches[0].clientX-last.x,dy=e.touches[0].clientY-last.y;if(Math.abs(dx)+Math.abs(dy)>5)moved=true;pz.tx+=dx;pz.ty+=dy;last={x:e.touches[0].clientX,y:e.touches[0].clientY};applyPZ();e.preventDefault();}
+    else if(e.touches.length===2&&pinch){const d=dist(e.touches);pz.scale=Math.max(.4,Math.min(3,pz.scale*d/pinch));pinch=d;applyPZ();e.preventDefault();}};
+  wrap.ontouchend=()=>{last=null;pinch=null;window._sup=moved;};
+  wrap.onwheel=e=>{e.preventDefault();pz.scale=Math.max(.4,Math.min(3,pz.scale*(e.deltaY<0?1.1:.9)));applyPZ();};
+  let drag=null; wrap.onmousedown=e=>{drag={x:e.clientX,y:e.clientY};moved=false;};
+  window.onmousemove=e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)moved=true;if(moved){pz.tx+=dx;pz.ty+=dy;drag={x:e.clientX,y:e.clientY};applyPZ();}};
+  window.onmouseup=()=>{if(drag){window._sup=moved;drag=null;}};
+  function dist(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.hypot(dx,dy);}
+}
+
+// ----- objetivos válidos -----
+function validTargets(){ const me=S.turn,out=[]; const p=S.players[me];
+  if(S.pending==='move_from'){for(const k in S.control)if(S.control[k]===me&&(S.units[k]||0)>0)out.push(k);}
+  else if(S.pending==='recruit'){for(const k in S.control)if(S.control[k]===me&&(S.build[k]==='ciudad'||HEXMAP[k].capital))out.push(k);}
+  else if(S.pending&&S.pending.startsWith('build:')){const ty=S.pending.split(':')[1];
+    for(const k in S.control){if(S.control[k]!==me)continue;
+      if(ty==='ciudad'&&!S.build[k])out.push(k);
+      if((ty==='templo'||ty==='escuela'||ty==='maravilla')&&S.build[k]!=='templo'&&S.build[k]!=='escuela'&&S.build[k]!=='maravilla')out.push(k);}}
+  else if(S.pending==='hero'){for(const k in S.control)if(S.control[k]===me&&(S.build[k]==='ciudad'||HEXMAP[k].capital))out.push(k);}
+  else if(S.pending==='naval_from'){for(const k in S.control){if(S.control[k]!==me||!(S.units[k]>0))continue;const [q,r]=k.split(',').map(Number);if(isBorder(q,r))out.push(k);}}
+  else if(S.pending==='naval_to'){for(const k in S.control){if(S.control[k]!==me||k===S.moveFrom)continue;const [q,r]=k.split(',').map(Number);if(isBorder(q,r))out.push(k);}}
+  else if(S.pending&&S.pending.startsWith('decree:')){ return decreeTargets(p,S.pending.split(':')[1])||[]; }
+  else if(S.pending==='aquis'){ const aq=p.heroes.find(h=>h.id==='aquis'); if(aq)nbKeys(aq.hex).forEach(k=>{ if(S.control[k]!=null&&S.control[k]!==me&&(S.units[k]||0)>0)out.push(k); }); }
+  return out;
+}
+function onHexTap(key){
+  if(window._sup){window._sup=false;return;}
+  if(S.ai[S.turn])return;
+  if(S.pending==='move_from'){ if(validTargets().includes(key)){S.moveFrom=key;S.sel=key;S.pending='move_to';highlight();setHint('Toca destino: <b style="color:#2f8f4f">verde</b> mover · <b style="color:#c33">rojo</b> atacar. (toca el origen para cancelar)'+(S.players[S.turn].name==='PERSIA'?'<br><span class="flav">Caminos Reales: alcanzas hasta 2 territorios.</span>':''));}else toast('Toca un territorio TUYO con unidades.'); return; }
+  if(S.pending==='move_to'){ if(key===S.moveFrom){cancelPending();return;}
+    if(moveTargets(S.moveFrom).includes(key)){ if(HEXMAP[key].ark){toast('El Arca es tierra santa: se toma con el Ritual del Arca.');return;} chooseMoveCount(S.moveFrom,key,'move');} else toast('Fuera de alcance.'); return; }
+  if(S.pending==='recruit'){if(validTargets().includes(key))uiAct(actRecruit(key),key);else toast('Toca una Ciudad/Capital tuya.');return;}
+  if(S.pending&&S.pending.startsWith('build:')){const ty=S.pending.split(':')[1];if(validTargets().includes(key))uiBuild(key,ty);else toast('Territorio no válido.');return;}
+  if(S.pending==='hero'){if(validTargets().includes(key))uiRecruitHero(key);else toast('Recluta en una Ciudad/Capital.');return;}
+  if(S.pending==='naval_from'){ if(validTargets().includes(key)){S.moveFrom=key;S.sel=key;S.pending='naval_to';highlight();setHint('Toca otro territorio tuyo del <b>borde del mapa</b>.');}else toast('Toca un territorio TUYO del borde con unidades.'); return; }
+  if(S.pending==='naval_to'){ if(key===S.moveFrom){cancelPending();return;} if(validTargets().includes(key))chooseMoveCount(S.moveFrom,key,'naval');else toast('Debe ser otro territorio tuyo del borde.'); return; }
+  if(S.pending==='aquis'){ if(validTargets().includes(key))uiAct(actAquis(key),key); else toast('Elige un enemigo adyacente a Aquís.'); return; }
+  if(S.pending==='decree:satrapas'){ if(!validTargets().includes(key)){toast('Elige un territorio neutral adyacente.');return;}
+    S._sat=S._sat||[]; const i=S._sat.indexOf(key); if(i>=0)S._sat.splice(i,1); else S._sat.push(key);
+    if(S._sat.length>=2){ const a=S._sat; S._sat=null; uiDecree('satrapas',a); return; }
+    setHint(`Los Sátrapas: elige hasta 2 territorios neutrales (${S._sat.length}/2).<br><button class="optbtn" onclick="const a=S._sat;S._sat=null;uiDecree('satrapas',a)">Confirmar con ${S._sat.length}</button>`); return; }
+  if(S.pending&&S.pending.startsWith('decree:')){ const id=S.pending.split(':')[1]; if(validTargets().includes(key))uiDecree(id,key); else toast('Objetivo no válido.'); return; }
+  S.sel=key;highlight();renderSheet();
+}
+function cancelPending(){S.pending=null;S.moveFrom=null;S._sat=null;highlight();renderSheet();}
+
+// ===================== PANEL DE ACCIONES =====================
+function setHint(html){
+  document.getElementById('sheettitle').innerHTML='Acción en curso';
+  document.getElementById('sheetbody').innerHTML=`<div class="infoline" style="font-size:13.5px;">${html}</div><button class="ghostbtn" onclick="cancelPending()">✕ Cancelar</button>`;
+}
+function tile(act,ico,label,cost,enabled,cls){
+  return `<div class="tile ${enabled?'':'dis'} ${cls||''}" onclick="${enabled?`startAction('${act}')`:''}"><span class="ico">${ico}</span><span>${label}</span><span class="cost">${cost}</span></div>`;
+}
+function renderSheet(){
+  if(S.pending) return;
+  const p=S.players[S.turn];
+  const title=document.getElementById('sheettitle'), body=document.getElementById('sheetbody');
+  if(S.ai[S.turn]){ title.innerHTML=`<b style="color:${p.color}">${cap(p.name)}</b> (IA) piensa…`; body.innerHTML='<div class="flav">La IA está jugando su turno.</div>'; return; }
+  const acts=S.actionsLeft;
+  title.innerHTML=`Turno de <b style="color:${p.color}">${cap(p.name)}</b> · <span style="color:#8B1A1A">${'●'.repeat(Math.max(0,acts))}${'○'.repeat(Math.max(0,3-acts))}</span>`;
+  const no=acts<=0;
+  let h='';
+  if(S.sel){ const hx=HEXMAP[S.sel], owner=S.control[S.sel];
+    let nm=hx.ark?'El Arca':(hx.holy||hx.name||'Senda Sagrada'), det=`Terreno: ${cap(hx.terr)}`;
+    if(owner!=null)det+=` · ${cap(S.players[owner].name)} · ${S.units[S.sel]||0} uni${S.build[S.sel]?' · '+cap(S.build[S.sel]):''}`;
+    else if(S.garrison[S.sel])det+=` · Guarnición ${S.garrison[S.sel]}`; else det+=' · Neutral';
+    h+=`<div class="selinfo"><b>${nm}</b> <span class="flav">${det}</span></div>`;
+  }
+  const ec=exploreCost(p), nDec=availableDecrees(p).length;
+  h+='<div class="tilewrap">';
+  h+=tile('mover','➤','Mover',p.name==='PERSIA'?'hasta 2':'adyacente',!no);
+  h+=tile('reclutar','⚔','Reclutar',`2 uni · ${recruitCost(p)} Rec`,!no&&p.rec>=recruitCost(p));
+  h+=tile('construir','🏠','Construir','Ciudad/Templo…',!no);
+  h+=tile('explorar','📜','Explorar',`${ec.con} Con${ec.fe?' + '+ec.fe+' Fe':''}`,!no&&p.con>=ec.con&&p.fe>=ec.fe);
+  h+=tile('hero','⚜','Héroe','Con',!no);
+  h+=tile('ritual','♻','Ritual',p.name==='EGIPTO'?'Rec 1:1':'2:1',!no);
+  h+=tile('vista','🔮','Vista','2 Con',!no&&p.con>=2);
+  if(canArk(p.id)) h+=tile('arca','🕎','Ritual Arca',`${arkCost(p)} Fe`,!no&&p.fe>=arkCost(p),'hot');
+  h+=tile('decreto','📯','Decreto',nDec?`${nDec} disp. · gratis`:'—',nDec>0,nDec?'hot':'');
+  if(p.name==='ISRAEL'&&CFG.timeOn&&p._timeRound!==S.round){ h+=tile('demorar','⏪','Demorar Elías',`${CFG.timeFe} Fe · gratis`,p.fe>=CFG.timeFe&&S.elias>0); h+=tile('apresurar','⏩','Apresurar Elías',`${CFG.timeFe} Fe · gratis`,p.fe>=CFG.timeFe&&S.elias<12); }
+  if(hasHero(p,'moises')&&!p._mosesUsed) h+=tile('moises','✋','Vara de Moisés','1/partida',true);
+  if(p.name==='FILISTEA'&&CFG.navalOn&&!p._navalUsed) h+=tile('costa','⛵','Costa','borde→borde',!no);
+  if(hasHero(p,'aquis')&&p._aquisRound!==S.round) h+=tile('aquis','👊','Aquís','empujar',true);
+  h+='</div>';
+  h+=`<button class="bigbtn" onclick="endTurn()">TERMINAR TURNO ${'●'.repeat(Math.max(0,acts))}</button>`;
+  h+=`<div style="display:flex;gap:6px;"><button class="ghostbtn" onclick="showFaction(S.players[S.turn])">Mi facción</button><button class="ghostbtn" onclick="showStandings()">Clasificación</button><button class="ghostbtn" onclick="newGamePrompt()">Nueva partida</button></div>`;
+  body.innerHTML=h; highlight();
+}
+function startAction(act){
+  const p=S.players[S.turn];
+  if(act==='decreto'){chooseDecree();return;}
+  if(act==='demorar'||act==='apresurar'){ uiAct(actTime(act==='demorar'?-1:1)); return; }
+  if(act==='moises'){ modalChoice('La Vara de Moisés','Una vez por partida: mueve a Elías',[
+      {label:'⏪ Elías −1',en:S.elias>0,on:()=>uiAct(actMoses(-1))},{label:'⏩ Elías +1',en:S.elias<12,on:()=>uiAct(actMoses(1))}],true); return; }
+  if(act==='aquis'){S.pending='aquis';highlight();setHint('Aquís: toca un territorio <b>enemigo adyacente</b> a él.');return;}
+  if(S.actionsLeft<=0){toast('No te quedan acciones.');return;}
+  if(act==='mover'){S.pending='move_from';highlight();setHint('Toca un territorio <b>tuyo con unidades</b>.');return;}
+  if(act==='costa'){S.pending='naval_from';highlight();setHint('Toca un territorio <b>tuyo del borde del mapa</b> con unidades.');return;}
+  if(act==='reclutar'){S.pending='recruit';highlight();setHint('Toca una <b>Ciudad/Capital tuya</b>.');return;}
+  if(act==='construir'){chooseBuild();return;}
+  if(act==='explorar'){uiAct(actExplore());return;}
+  if(act==='hero'){chooseHero();return;}
+  if(act==='ritual'){chooseRitual();return;}
+  if(act==='vista'){uiAct(actForesee());return;}
+  if(act==='arca'){uiAct(actArk());return;}
+}
+
+// ----- menús -----
+function chooseBuild(){
+  const p=S.players[S.turn], lvl=relLevel(S.elias);
+  modalChoice('Construir','¿Qué deseas erigir?',[
+    {label:`<b>Ciudad</b> · ${cityCost(p)} Rec — permite reclutar, +1 Rec/ronda`, en:p.rec>=cityCost(p), on:()=>{closeModal();S.pending='build:ciudad';highlight();setHint('Toca un <b>territorio tuyo sin edificio</b>.');}},
+    {label:`<b>Templo</b> · ${templeCost(p)} Fe — <b>reliquia Nivel ${lvl}</b> · +1 Fe/ronda`, en:p.fe>=templeCost(p), on:()=>{closeModal();S.pending='build:templo';highlight();setHint('Toca un <b>territorio tuyo</b> para el Templo.');}},
+    {label:`<b>Escuela de Profetas</b> · ${schoolCost(p)} Con — <b>reliquia Nivel ${lvl}</b> · +1 Con/ronda`, en:p.con>=schoolCost(p), on:()=>{closeModal();S.pending='build:escuela';highlight();setHint('Toca un <b>territorio tuyo</b> para la Escuela.');}},
+    {label:`<b>Maravilla</b> · única en el mundo — efecto + PV (máx. ${maxWonders(p)})`, en:p.maravillas.length<maxWonders(p), on:()=>chooseWonder()},
+  ],true);
+}
+function chooseWonder(){
+  const p=S.players[S.turn], taken=new Set(); S.players.forEach(pl=>pl.maravillas.forEach(m=>taken.add(m.name)));
+  const opts=D.marav.filter(m=>!taken.has(m[0])).map(m=>({
+    label:`<b>${m[0]}</b> · ${wonderRec(p,m)} Rec${m[2]?' + '+m[2]+' Con':''} · ${m[3]} PV<br><span class="flav">${m[4]}</span>`,
+    en:p.rec>=wonderRec(p,m)&&p.con>=m[2],
+    on:()=>{closeModal();S._pendWonder=m;S.pending='build:maravilla';highlight();setHint(`Toca un <b>territorio tuyo</b> para <b>${m[0]}</b>.`);}}));
+  if(!opts.length){toast('No quedan Maravillas.');return;}
+  modalChoice('Maravillas','Solo existe una de cada una',opts,true);
+}
+function chooseHero(){
+  const p=S.players[S.turn], pool=D.heroes[p.name]||[], owned=new Set(p.heroes.map(h=>h.name));
+  const opts=pool.filter(h=>!owned.has(h[0])&&h[1]>0).map(h=>({
+    label:`<b>${h[0]}</b> · ${h[1]} Con · +${h[2]} Fuerza<br><span class="flav">${h[3]}</span>`, en:p.con>=h[1],
+    on:()=>{closeModal();S._pendHero=h;S.pending='hero';highlight();setHint(`Toca una <b>Ciudad/Capital tuya</b> para reclutar a <b>${h[0]}</b>.`);}}));
+  if(!opts.length){toast('Ya tienes a todos tus héroes.');return;}
+  modalChoice('Reclutar Héroe','Campeones de '+cap(p.name),opts,true);
+}
+function chooseRitual(){
+  const p=S.players[S.turn]; const rc=ritualCost(p,'rec');
+  modalChoice('Ritual','Convierte recursos'+(p.name==='EGIPTO'?' · Granero del Faraón: Rec 1:1':''),[
+    {label:`${rc} Rec → 1 Fe`, en:p.rec>=rc, on:()=>uiRitual('recfe')},
+    {label:`${rc} Rec → 1 Con`, en:p.rec>=rc, on:()=>uiRitual('reccon')},
+    {label:'2 Fe → 1 Rec', en:p.fe>=2, on:()=>uiRitual('ferec')},
+    {label:'2 Con → 1 Rec', en:p.con>=2, on:()=>uiRitual('conrec')},
+    {label:'2 Fe → 1 Con', en:p.fe>=2, on:()=>uiRitual('fecon')},
+    {label:'2 Con → 1 Fe', en:p.con>=2, on:()=>uiRitual('confe')},
+  ],true);
+}
+function decreeStatus(p,d){
+  if(!p.decrees.includes(d.id)) return ['usado','Ya proclamado'];
+  if(d.band==='T'&&S.elias<5) return ['lock','Disponible desde Trueno (Elías 5)'];
+  if(d.band==='M'&&S.elias<9) return ['lock','Disponible desde Tormenta (Elías 9)'];
+  if(p._decTid===S.tid) return ['lock','Ya proclamaste un Decreto este turno'];
+  return ['ok','Disponible · no gasta acción'];
+}
+function chooseDecree(){
+  const p=S.players[S.turn];
+  const opts=(D.decrees[p.name]||[]).map((d,i)=>{ const [st,lbl]=decreeStatus(p,d);
+    return {label:`<b>${['I','II','III'][i]} · ${d.n}</b> <span class="flav">(${d.ref})</span><br>${d.txt}<br><span class="tag ${st}">${lbl}</span>`, en:st==='ok',
+      on:()=>{ closeModal(); const tg=['horno','leones','dagon','satrapas'];
+        if(tg.includes(d.id)){ const t=decreeTargets(p,d.id); if(!t||!t.length){toast('No hay objetivos válidos.');return;}
+          S.pending='decree:'+d.id; S._sat=null; highlight(); setHint(`<b>${d.n}</b>: elige el territorio objetivo.`); }
+        else uiDecree(d.id); }}; });
+  modalChoice('Decretos de '+cap(p.name),'Una vez por partida cada uno · máx. 1 por turno',opts,true);
+}
+function uiDecree(id,arg){
+  const r=actDecree(id,arg); if(r.fail){toast(r.fail);return;}
+  const d=r.decree; let extra='';
+  if(r.relic) extra=`<div class="infoline">Reliquia: <b>${r.relic.name}</b> — ${r.relic.desc} <span class="pill r">${r.relic.pv} PV</span></div>`;
+  showCard('gold','📯 '+d.n,d.ref,`<div class="flav">«${d.flav}»</div><div class="infoline" style="margin-top:6px;">${r.msg}</div>${extra}${(S._cont=S.sel,'')}${btn('CONTINUAR','contNow()')}`,{chain:true});
+}
+
+// ----- ejecutores -----
+function afterAction(selKey){ closeModal(); S.pending=null; S.moveFrom=null; if(selKey!==undefined)S.sel=selKey; drawUnits(); refreshTop(); renderSheet(); }
+function contNow(){ afterAction(S._cont); S._cont=null; }
+function uiAct(r,selKey){ if(r.fail){toast(r.fail);return;}
+  if(r.tac){ showCard('combat','Táctica — '+r.tac.n,r.tac.ref+' · coste: '+exploreCost(S.players[S.turn]).con+' Con'+(r.cost?` + ${r.cost} Fe`:''),
+    `<div class="infoline">${r.tac.txt}</div><div class="flav">«${r.tac.flav}»</div><div class="flav">La guardas en mano hasta un combate.</div>${(S._cont=selKey,'')}${btn('CONTINUAR','contNow()')}`,{chain:true}); return; }
+  if(r.peek){ const c=r.peek; showCard(c.k==='mil'?'mil':'pla','Vista del Profeta','Próxima carta de la Voz',
+    `<div class="infoline">Será <b>${c.n}</b> (${c.k==='mil'?'Milagro':'Plaga'}, ${c.ref}) → ${tgtLabel(c.tgt)}.</div><div class="infoline">${c.txt}</div><div class="flav">Elías avanzará ${c.eco}.</div>${(S._cont=selKey,'')}${btn('CONTINUAR','contNow()')}`,{chain:true}); return; }
+  afterAction(selKey);
+}
+function uiMove(fromKey,toKey,n){ const r=actMove(fromKey,toKey,n); if(r.fail){toast(r.fail);return;}
+  if(r.combat){ startCombatUI(r.fromKey,r.toKey,r.n); return; } afterAction(toKey); }
+// ----- Movimiento dividido: cuántas unidades van y cuántas se quedan de guarnición -----
+function chooseMoveCount(fromKey,toKey,kind){
+  const all=S.units[fromKey]||0;
+  const atk=kind==='move'&&((S.control[toKey]!=null&&S.control[toKey]!==S.turn)||!!S.garrison[toKey]);
+  const min=atk?2:1;
+  const go=n=>{ closeModal(); if(kind==='naval') uiAct(actNaval(fromKey,toKey,n),toKey); else uiMove(fromKey,toKey,n); };
+  if(all<=min){ if(atk&&all<2){ toast('Necesitas 2 o más unidades para atacar.'); return; } go(all); return; }
+  S._mv={fromKey,toKey,kind,n:all,min,max:all,go};
+  const half=Math.max(min,Math.ceil(all/2)), leave1=all-1;
+  const q=(n,lbl)=>`<button class="optbtn" onclick="S._mv.n=${n};mvRefresh()"><b>${lbl}</b> · ${mvTxt(n,all-n,atk)}</button>`;
+  let h=`<div class="infoline">${nameOf(fromKey)} tiene <b>${all}</b> unidades.${hasHeroAt(fromKey)?' Los héroes acompañan al grupo que sale.':''}</div>`;
+  h+=q(all,'Todas'); if(half<all&&half!==leave1)h+=q(half,'Mitad'); if(leave1>=min)h+=q(leave1,'Dejar 1 de guarnición');
+  h+=`<div class="mvstep"><button class="stepbtn" onclick="S._mv.n=Math.max(S._mv.min,S._mv.n-1);mvRefresh()">−</button><span id="mvn"></span><button class="stepbtn" onclick="S._mv.n=Math.min(S._mv.max,S._mv.n+1);mvRefresh()">+</button></div>`;
+  h+=`<button class="bigbtn gold" id="mvgo" onclick="S._mv.go(S._mv.n)">—</button><button class="ghostbtn" onclick="closeModal();cancelPending()">Cancelar</button>`;
+  showCard(atk?'combat':'gold',(atk?'Atacar ':kind==='naval'?'Navegar a ':'Mover a ')+nameOf(toKey),atk?'¿Con cuántas unidades atacas? (mín. 2)':'¿Cuántas unidades se mueven?',h,{chain:true});
+  mvRefresh();
+}
+function mvTxt(n,st,atk,bold){ const B=x=>bold?`<b>${x}</b>`:x;
+  return `${B(n)} ${atk?(n===1?'ataca':'atacan'):(n===1?'va':'van')} · ${B(st)} ${st===1?'se queda':'se quedan'}`; }
+function hasHeroAt(k){ return S.players[S.turn].heroes.some(h=>h.hex===k); }
+function mvRefresh(){ const M=S._mv; if(!M)return; const atk=M.min===2;
+  const e=document.getElementById('mvn'); if(e)e.innerHTML=mvTxt(M.n,M.max-M.n,atk,true);
+  const g=document.getElementById('mvgo'); if(g)g.textContent=(atk?'ATACAR CON ':'MOVER ')+M.n+' ▸'; }
+function uiBuild(key,type){
+  let r;
+  if(type==='ciudad')r=actBuildCity(key); else if(type==='templo')r=actBuildTemple(key);
+  else if(type==='escuela')r=actBuildSchool(key); else if(type==='maravilla')r=actBuildWonder(key,S._pendWonder);
+  if(r.fail){toast(r.fail);return;}
+  if(r.relic){ showCard('gold','Reliquia — Nivel '+r.relic.lvl,bandName(S.elias)+' · el altar revela su don',
+    `<h3 style="font-family:Cinzel,serif;color:#8B6914;">${r.relic.name}</h3><div class="infoline">${r.relic.desc}</div><div class="infoline"><span class="pill r">${r.relic.pv} PV</span> al final.</div>${(S._cont=key,'')}${btn('CONTINUAR','contNow()')}`,{chain:true}); return; }
+  if((type==='templo'||type==='escuela')&&!r.relic){ toast('El mazo de reliquias está agotado.'); }
+  if(type==='maravilla'){ const m=S._pendWonder; showCard('gold','★ '+m[0],'Maravilla erigida',`<div class="infoline">${m[4]}</div><div class="infoline"><span class="pill r">${m[3]} PV</span></div>${(S._cont=key,'')}${btn('CONTINUAR','contNow()')}`,{chain:true}); return; }
+  afterAction(key);
+}
+function uiRecruitHero(key){ const p=S.players[S.turn], h=S._pendHero; if(p.con<h[1]){toast('Sin Conocimiento.');return;}
+  p.con-=h[1]; p.heroes.push({name:h[0],bonus:h[2],hex:key,id:h[4]}); spend(); logE(`${cap(p.name)} recluta al héroe <b>${h[0]}</b>.`);
+  showCard('gold','⚜ '+h[0],'Héroe reclutado · '+h[5],`<div class="infoline">+${h[2]} Fuerza en combate y dado legendario (5–6 = +1).</div><div class="infoline">${h[3]}</div>${(S._cont=key,'')}${btn('CONTINUAR','contNow()')}`,{chain:true});
+}
+function uiRitual(kind){ const r=actRitual(kind); if(r.fail){toast(r.fail);return;} afterAction(S.sel); }
+
+// ===================== COMBATE =====================
+function startCombatUI(fromKey,toKey,n){
+  const ctx=combatCtx(fromKey,toKey,n);
+  if(ctx.atkUnits<2){ toast('Necesitas 2 o más unidades para atacar.'); cancelPending(); return; }
+  S._combat={fromKey,toKey,ctx,atkIdx:-1,atkMir:false,defIdx:-1,defMir:false};
+  showAtkTactic();
+}
+function combatForces(ctx){
+  const a=ctx.atkP, d=ctx.defP;
+  const dec=[]; if(ctx.dec.jericho)dec.push('Jericó');if(ctx.dec.carros&&(ctx.terr==='llano'||ctx.terr==='desierto'))dec.push('Carros');if(ctx.dec.laquis)dec.push('Laquis');if(ctx.dec.goliat)dec.push('Goliat');if(ctx.dec.medos)dec.push('Medos y Persas');
+  let h=`<div class="statline"><span>Atacas: <b>${cap(a.name)}</b></span><span>${ctx.atkUnits} uni${ctx.stay?` · ${ctx.stay} se quedan en ${nameOf(ctx.fromKey)}`:''}</span></div>`;
+  h+=`<div class="statline"><span>Defiende: <b>${ctx.garr?'Guarnición':cap(d.name)}</b></span><span>${nameOf(ctx.toKey)} · ${cap(ctx.terr)}</span></div>`;
+  if(dec.length)h+=`<div class="infoline">📯 Decretos activos: <b>${dec.join(', ')}</b></div>`;
+  if(ctx.dalila)h+=`<div class="infoline">Dalila anula a los héroes ${ctx.dalila==='def'?'defensores':'atacantes'}.</div>`;
+  h+=`<div class="calcbox" id="calcprev"></div>`;
+  return h;
+}
+// Vista previa: mismo cálculo que el resultado (combatCalc), sin dado ni efectos.
+// Solo muestra la jugada del bando que mira; la del rival es secreta.
+function previewHtml(ctx,atkTac,atkMir,defTac,defMir,side){
+  const X=combatCalc(ctx,atkTac,defTac,atkMir,defMir,true);
+  const die=s=>X.dieChance[s]?' <span class="flav">· dado legendario: +1 con 5–6</span>':'';
+  let h=`<div class="calc"><b>Ataque:</b> ${fmtParts(X.Ap,X.atkStr)}${die('atk')}</div><div class="calc"><b>Defensa:</b> ${fmtParts(X.Dp,X.defStr)}${die('def')}</div>`;
+  const hidden=side==='atk'?'Táctica y Milagro del defensor':'Táctica y Milagro del atacante';
+  h+=`<div class="vs" style="font-size:20px;">${X.atkStr} vs ${X.defStr}</div><div class="flav">Vista previa · falta lo oculto: ${hidden}${ctx.dec.goliat&&side==='atk'?' (Goliat: el defensor no juega nada)':''}.</div>`;
+  return h;
+}
+function refreshPreview(side){ const C=S._combat; if(!C)return; const ctx=C.ctx; const el=document.getElementById('calcprev'); if(!el)return;
+  if(side==='def'){ const dt=C.defIdx>=0?ctx.defP.tactics[C.defIdx]:null; el.innerHTML=previewHtml(ctx,null,false,dt,C.defMir,'def'); }
+  else { const at=C.atkIdx>=0?ctx.atkP.tactics[C.atkIdx]:null; el.innerHTML=previewHtml(ctx,at,C.atkMir,null,false,'atk'); } }
+function showAtkTactic(){
+  const C=S._combat, ctx=C.ctx, p=ctx.atkP;
+  let h=combatForces(ctx); const canMir=p.fe>=(p.ark?1:2);
+  h+=`<div class="infoline" style="margin-top:8px;"><b>Tu Táctica (oculta):</b></div><div id="atktacs"></div>`;
+  h+=`<button class="optbtn" id="atknone">⚔ <b>Sin Táctica</b></button>`;
+  if(canMir) h+=`<button class="optbtn" id="atkmir">✨ Milagro de combate: <b id="mirlbl">NO</b> <span class="flav">(${p.ark?1:2} Fe → +2 Fuerza)</span></button>`;
+  h+=`<button class="bigbtn gold" id="atkgo">CONTINUAR ▸</button><button class="ghostbtn" onclick="closeModal();cancelPending()">Retirarse</button>`;
+  showCard('combat','Combate · '+nameOf(ctx.toKey),'Tú atacas — elige tu jugada',h,{chain:true});
+  const cont=document.getElementById('atktacs');
+  p.tactics.forEach((t,i)=>{ const b=document.createElement('button'); b.className='optbtn'; b.innerHTML=`<b>${t.n}</b> · ${t.txt}`;
+    b.onclick=()=>{C.atkIdx=i; [...cont.children].forEach((x,j)=>x.style.background=(j===i)?'#cdeccd':'#fff'); document.getElementById('atknone').style.background='#fff';}; cont.appendChild(b); });
+  document.getElementById('atknone').onclick=()=>{C.atkIdx=-1; [...cont.children].forEach(x=>x.style.background='#fff'); document.getElementById('atknone').style.background='#cdeccd';};
+  if(canMir)document.getElementById('atkmir').onclick=()=>{C.atkMir=!C.atkMir; document.getElementById('mirlbl').textContent=C.atkMir?'SÍ':'NO'; document.getElementById('atkmir').style.background=C.atkMir?'#cdeccd':'#fff';};
+  document.getElementById('atkgo').onclick=()=>proceedDefender();
+  [...cont.children,document.getElementById('atknone'),document.getElementById('atkmir')].forEach(el=>{ if(el){ const o=el.onclick; el.onclick=()=>{o&&o();refreshPreview('atk');}; } });
+  refreshPreview('atk');
+}
+function proceedDefender(){
+  const C=S._combat, ctx=C.ctx, d=ctx.defP;
+  if(!d||ctx.dec.goliat){ resolveCombatUI(); return; }
+  if(S.ai[d.id]){
+    C.defTacObj=aiPickTactic(d,'def',ctx);
+    const D0=sideStrength(ctx,'def',C.defTacObj,false,true).str+(ctx.terr==='montana'?1:0);
+    const A0=sideStrength(ctx,'atk',ctx.atkP.tactics[C.atkIdx]||null,false,true).str;
+    ctx.atkP._flamPending=false; d._flamPending=false;
+    C.defMir=(d.fe>=(d.ark?1:2)&&D0<A0); resolveCombatUI(); return;
+  }
+  if(!d.tactics.length){ showDefMiracleOnly(); return; }
+  showCard('combat','Defensa de '+cap(d.name),'Pasa el dispositivo al defensor',
+    `<div class="infoline">El atacante ya eligió su jugada (oculta).</div>${btn('VER MIS OPCIONES','showDefTactic()')}`,{chain:true});
+}
+function showDefMiracleOnly(){
+  const C=S._combat, d=C.ctx.defP, canMir=d.fe>=(d.ark?1:2);
+  if(!canMir){ resolveCombatUI(); return; }
+  showCard('combat','Defensa de '+cap(d.name),'¿Invocar Milagro de combate?',
+    `<div class="infoline">No tienes Tácticas, pero puedes gastar ${d.ark?1:2} Fe por +2 Fuerza.</div>
+     <button class="optbtn" onclick="S._combat.defMir=true;resolveCombatUI()">✨ <b>Sí, invocar Milagro</b></button>
+     <button class="optbtn" onclick="resolveCombatUI()">Defender sin milagro</button>`,{chain:true});
+}
+function showDefTactic(){
+  const C=S._combat, ctx=C.ctx, d=ctx.defP;
+  let h=combatForces(ctx); const canMir=d.fe>=(d.ark?1:2);
+  h+=`<div class="infoline" style="margin-top:8px;"><b>Tu Táctica de defensa:</b></div><div id="deftacs"></div><button class="optbtn" id="defnone">🛡 <b>Sin Táctica</b></button>`;
+  if(canMir)h+=`<button class="optbtn" id="defmir">✨ Milagro: <b id="dmirlbl">NO</b> <span class="flav">(${d.ark?1:2} Fe → +2)</span></button>`;
+  h+=`<button class="bigbtn gold" id="defgo">RESOLVER ▸</button>`;
+  showCard('combat','Defensa · '+cap(d.name),'Elige tu jugada',h,{chain:true});
+  const cont=document.getElementById('deftacs');
+  d.tactics.forEach((t,i)=>{ const b=document.createElement('button'); b.className='optbtn'; b.innerHTML=`<b>${t.n}</b> · ${t.txt}`;
+    b.onclick=()=>{C.defIdx=i; [...cont.children].forEach((x,j)=>x.style.background=(j===i)?'#cdeccd':'#fff'); document.getElementById('defnone').style.background='#fff';}; cont.appendChild(b); });
+  document.getElementById('defnone').onclick=()=>{C.defIdx=-1; [...cont.children].forEach(x=>x.style.background='#fff'); document.getElementById('defnone').style.background='#cdeccd';};
+  if(canMir)document.getElementById('defmir').onclick=()=>{C.defMir=!C.defMir; document.getElementById('dmirlbl').textContent=C.defMir?'SÍ':'NO'; document.getElementById('defmir').style.background=C.defMir?'#cdeccd':'#fff';};
+  document.getElementById('defgo').onclick=()=>resolveCombatUI();
+  [...cont.children,document.getElementById('defnone'),document.getElementById('defmir')].forEach(el=>{ if(el){ const o=el.onclick; el.onclick=()=>{o&&o();refreshPreview('def');}; } });
+  refreshPreview('def');
+}
+function resolveCombatUI(){
+  const C=S._combat, ctx=C.ctx, a=ctx.atkP, d=ctx.defP;
+  const atkTac = C.atkIdx>=0? a.tactics[C.atkIdx] : null;
+  let defTac = null;
+  if(d&&!ctx.dec.goliat){ defTac = S.ai[d.id] ? C.defTacObj : (C.defIdx>=0? d.tactics[C.defIdx] : null); }
+  if(atkTac)a.tactics.splice(a.tactics.indexOf(atkTac),1);
+  if(defTac&&d)d.tactics.splice(d.tactics.indexOf(defTac),1);
+  const R=doResolve(ctx,atkTac,defTac,C.atkMir,C.defMir);
+  const txt=applyResult(R); spendCombat(a);
+  let line=`<div class="vs">${R.atkStr} &nbsp;vs&nbsp; ${R.defStr}</div>`;
+  line+=`<div class="calcbox"><div class="calc"><b>Ataque:</b> ${fmtParts(R.Ap,R.atkStr)}</div><div class="calc"><b>Defensa:</b> ${fmtParts(R.Dp,R.defStr)}</div>`;
+  if(R.forced)line+=`<div class="calc"><b>La Fe decide:</b> gana ${R.forced==='atk'?'el atacante':'el defensor'} por tener más Fe.</div>`;
+  line+=`<div class="flav">Diferencia ${R.diff>90?'(victoria por Fe)':R.diff<-90?'(derrota por Fe)':R.diff}. Ganar: pierdes la mitad de la diferencia (redondeo abajo). Perder: pierdes tanto como la diferencia.</div></div>`;
+  if(ctx.dec.goliat&&d)line+=`<div class="flav">El Desafío de Goliat: el defensor no pudo jugar Táctica ni Milagro.</div>`;
+  line+=`<hr style="border:none;border-top:1px dotted #cdbb8c;margin:8px 0;"><div class="infoline">${txt}</div>`;
+  const eliasFlag=(atkTac&&atkTac.e==='eliasmove')||(defTac&&defTac.e==='eliasmove');
+  const title=R.diff>0?'Conquista':R.diff===0?'Tablas':'Repelido';
+  if(eliasFlag){
+    line+=`<div class="infoline" style="margin-top:6px;"><b>El Manto de Elías:</b> mueve el reloj.</div>
+      <button class="optbtn" onclick="S.elias=Math.min(12,S.elias+1);refreshTop();afterCombat()">⏩ Elías +1</button>
+      <button class="optbtn" onclick="S.elias=Math.max(0,S.elias-1);refreshTop();afterCombat()">⏪ Elías −1</button>`;
+  } else line+=`${(S._cont=ctx.toKey,'')}${btn('CONTINUAR','afterCombatCont()')}`;
+  showCard('combat','Resultado',title,line,{chain:true});
+  logE(`${cap(a.name)} ataca ${nameOf(ctx.toKey)}: ${fmtParts(R.Ap,R.atkStr)} vs ${fmtParts(R.Dp,R.defStr)}.`);
+  drawUnits(); refreshTop();
+}
+function afterCombat(){ closeModal(); S.pending=null;S.moveFrom=null; S.sel=S._combat?S._combat.toKey:null; drawUnits(); refreshTop(); renderSheet(); }
+function afterCombatCont(){ afterAction(S._cont); S._cont=null; }
+
+// ===================== TURNO / RONDA =====================
+function endTurn(){
+  closeModal(); S.sel=null;S.pending=null;S.moveFrom=null;
+  S.turn++;
+  if(S.turn>=S.players.length){ S.turn=0; runProduction(); return; }
+  beginTurn(); refreshTop(); renderSheet(); drawUnits(); saveGame();
+  if(S.ai[S.turn]) setTimeout(runAITurn,250);
+  else { centerOnTurn(true); if(chosenMode==='hot') toast('Turno de '+cap(S.players[S.turn].name)+' — pasa el dispositivo'); }
+}
+function runAITurn(){ aiTakeTurn(); drawUnits(); refreshTop(); endTurn(); }
+function runProduction(){
+  const lines=[]; S.players.forEach(p=>{ const g=produce(p); lines.push(`<b style="color:${p.color}">${ABBR[p.name]}</b>: +${g.rec} Rec · +${g.fe} Fe · +${g.con} Con`); });
+  const lost=applyStoreCap(); Object.keys(lost).forEach(id=>lines.push(`<span class="flav">${cap(S.players[id].name)}: el maná guardado se agusana (−${lost[id]} Rec, máx. ${CFG.storeCap}).</span>`));
+  const cu=applyCatchup();
+  if(cu&&cu.ids.length) lines.push(`<b>Bendición del Rezagado</b>: ${cu.ids.map(i=>cap(S.players[i].name)).join(', ')} recibe +${cu.rec} Rec y +${cu.fe} Fe.`);
+  logE('<b>Producción.</b>');
+  showCard('gold','Producción','Ronda '+S.round+' · todos cobran tributo','<div class="infoline">'+lines.join('</div><div class="infoline">')+'</div>'+btn('AL JUICIO DE ELÍAS ▸','preJudgment()'),{chain:true});
+  refreshTop(); drawUnits();
+}
+function preJudgment(){
+  closeModal();
+  const card=peekVoz();
+  const bab=S.players.find(p=>p.name==='BABILONIA');
+  if(bab&&!S.ai[bab.id]&&astroAvailable(bab)&&!S._astroAsked){
+    S._astroAsked=true;
+    showCard(card.k==='mil'?'mil':'pla','Astrólogos de Caldea','Babilonia lee la próxima Voz',
+      `<div class="infoline">La carta es <b>${card.n}</b> (${card.k==='mil'?'Milagro':'Plaga'}) → <b>${tgtLabel(card.tgt)}</b>.</div><div class="infoline">${card.txt}</div>
+       <button class="optbtn" onclick="astroReroll(S.players.find(p=>p.name==='BABILONIA'));preJudgment2()">✶ <b>Descartarla</b> y revelar otra (${astroCost(bab)} Con)</button>
+       <button class="optbtn" onclick="preJudgment2()">Dejar que se cumpla</button>`,{chain:true});
+    return;
+  }
+  preJudgment2();
+}
+function preJudgment2(){
+  closeModal(); S._astroAsked=false;
+  const eg=S.players.find(p=>p._magos);
+  if(eg&&!S.ai[eg.id]){
+    const card=peekVoz();
+    const opts=S.players.map(p=>({label:`<b style="color:${p.color}">${cap(p.name)}</b>`,en:true,on:()=>{S._magosChoice=p.id;runJudgment();}}));
+    modalChoice('Los Magos del Faraón',`La Voz es «${card.n}» (${card.k==='mil'?'Milagro':'Plaga'}): ¿quién la recibe?`,opts,false);
+    return;
+  }
+  runJudgment();
+}
+function runJudgment(){
+  closeModal();
+  const J=advanceElias(); const c=J.card; const isMil=c.k==='mil';
+  let body=`<div class="flav">«${c.flav}» — ${c.ref}</div><div class="infoline" style="margin-top:4px;">${c.txt}</div>`;
+  body+=`<div class="statline"><span>Elías avanza ${c.eco>1?'⚡⚡':'⚡'}</span><span><b>${J.prev} → ${S.elias}</b> · ${bandName(S.elias)}</span></div>`;
+  if(J.astro)body+=`<div class="flav">Los astrólogos de Babilonia cambiaron la carta.</div>`;
+  if(J.magos)body+=`<div class="flav">Los Magos del Faraón eligieron el destino de la Voz.</div>`;
+  if(J.effs.length) J.effs.forEach(e=>{ body+=`<div class="statline"><span><b style="color:${S.players[e.id].color}">${cap(S.players[e.id].name)}</b></span><span>${e.txt}</span></div>`; });
+  else body+=`<div class="infoline">Nadie cumple el objetivo. Sin efecto.</div>`;
+  const over=S.elias>=13||S.round+1>CFG.maxRounds;
+  if(S.elias>=13) body+=`<div class="infoline" style="margin-top:8px;color:#8B1A1A;"><b>ELÍAS LLEGA AL HOREB.</b> La historia se cierra.</div>`;
+  body+= over? btn('JUICIO DEL HOREB ▸','endGame()') : btn('SIGUIENTE RONDA ▸','nextRound()');
+  showCard(isMil?'mil':'pla','La Voz — '+c.n,isMil?'Milagro':'Plaga',body,{chain:true});
+  logE(`<b>Juicio:</b> ${c.n}. Elías ${S.elias}.`);
+  refreshTop(); drawUnits();
+}
+function nextRound(){
+  closeModal(); S.round++;
+  if(S.round>CFG.maxRounds||S.elias>=13){ endGame(); return; }
+  S.turn=0; beginTurn(); S.sel=null;S.pending=null;
+  refreshTop(); renderSheet(); drawUnits(); saveGame();
+  const unlock=S.elias>=9?'Decretos III desbloqueados (Tormenta).':S.elias>=5?'Decretos II desbloqueados (Trueno).':'';
+  showCard('gold','Ronda '+S.round,'Elías '+S.elias+' · '+bandName(S.elias),
+    `<div class="infoline">Templos y Escuelas dan reliquias de <b>Nivel ${relLevel(S.elias)}</b>. Tácticas del mazo <b>${bandName(S.elias)}</b>.</div>${unlock?`<div class="infoline">📯 ${unlock}</div>`:''}<div class="infoline">Empieza ${cap(S.players[0].name)}.</div>${btn('EMPEZAR','closeRound()')}`,{chain:true});
+}
+function closeRound(){ closeModal(); if(S.ai[S.turn])setTimeout(runAITurn,250); else centerOnTurn(true); }
+
+// ===================== PUNTUACIÓN =====================
+function endGame(){
+  closeModal(); clearSave();
+  const H=horebJudgment();
+  const rk=ranking(); const w=rk[0];
+  document.getElementById('winner').classList.remove('hidden');
+  document.getElementById('wintitle').textContent='🏆 '+cap(w.p.name);
+  let h=`<div class="flav" style="color:#C9A84C;">${D.horeb.n} (${D.horeb.ref}) — ${D.horeb.txt}</div>`;
+  if(H){ if(H.ark!=null)h+=`<div style="margin:4px 0;">El Arca honra a <b>${cap(S.players[H.ark].name)}</b> (+${CFG.horebArkPV} PV).</div>`;
+    else if(H.holy.length)h+=`<div style="margin:4px 0;">Las Ciudades Santas honran a <b>${H.holy.map(i=>cap(S.players[i].name)).join(', ')}</b> (+${CFG.horebPV} PV).</div>`; }
+  rk.forEach((r,i)=>{ const b=scoreBreakdown(r.p);
+    h+=`<div class="statline" style="color:#E8D5A3;border-color:#5a4a1e;"><span>${i+1}. <b style="color:${r.p.color}">${cap(r.p.name)}</b>${r.p.ark?' 🕎':''}</span><span><b>${r.pv} PV</b></span></div>`;
+    h+=`<div style="font-size:10px;color:#8a7a4a;text-align:left;padding:0 0 6px;">Terr ${b.terr} · Santas ${b.santas} · Reliq ${b.reliq} · Marav ${b.marav} · Fe ${b.fe} · Con ${b.con}${r.p.name==='EGIPTO'?'':' · Identidad '+b.ident}${b.heroes?' · Héroes '+b.heroes:''}${b.arca?' · Arca '+b.arca:''} · Eventos ${b.eventos}</div>`; });
+  document.getElementById('winbody').innerHTML=h; logE(`<b>FIN.</b> Gana ${cap(w.p.name)} con ${w.pv} PV.`);
+}
+function showStandings(){
+  let h='';
+  ranking().forEach(({p,pv})=>{
+    h+=`<div class="statline"><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${p.color};margin-right:5px;"></span><b>${cap(p.name)}</b>${p.ark?' 🕎':''}${S.ai[p.id]?' <span class="flav">(IA)</span>':''}</span><span>${pv} PV</span></div>`;
+    const bits=[`${countTerr(p.id)} terr`,`${p.rec} Rec · ${p.fe} Fe · ${p.con} Con`,`Decretos: ${p.decrees.length}/3`];
+    if(p.reliquias.length)bits.push('Reliquias: '+p.reliquias.map(r=>r.name).join(', '));
+    if(p.heroes.length)bits.push('Héroes: '+p.heroes.map(x=>x.name).join(', '));
+    if(p.maravillas.length)bits.push('Maravillas: '+p.maravillas.map(m=>m.name).join(', '));
+    if(p.tactics.length)bits.push('Tácticas en mano: '+p.tactics.length);
+    h+=`<div style="font-size:10px;color:#6b4e08;padding:2px 0 6px;">${bits.join(' · ')}</div>`;
+  });
+  showCard('gold','Estado de la partida','Ronda '+S.round+' · Elías '+S.elias+' · '+bandName(S.elias),h+btn('CERRAR','closeModal()'),{dismissible:true});
+}
+function showFaction(p,intro){
+  const f=D.fac[p.name];
+  let h=`<div class="flav">${f.lore}</div><div class="infoline" style="margin-top:6px;"><b>${f.archetype}</b></div>`;
+  h+=`<div class="infoline"><b>⚙ ${f.mechanic[0]}:</b> ${f.mechanic[1]}</div><div class="infoline"><b>★ ${f.identity[0]}:</b> ${f.identity[1]}</div>`;
+  f.passives.forEach(x=>h+=`<div class="infoline">• ${x}</div>`);
+  h+=`<div class="infoline" style="margin-top:6px;"><b>📯 Decretos</b></div>`;
+  (D.decrees[p.name]||[]).forEach((d,i)=>{ const [st,lbl]=decreeStatus(p,d); h+=`<div class="infoline"><b>${['I','II','III'][i]} · ${d.n}</b> — ${d.txt} <span class="tag ${st}">${lbl}</span></div>`; });
+  h+=`<div class="infoline" style="margin-top:6px;"><b>⚜ Héroes</b></div>`;
+  (D.heroes[p.name]||[]).forEach(x=>h+=`<div class="infoline"><b>${x[0]}</b> (${x[1]} Con, +${x[2]}) — ${x[3]}</div>`);
+  h+=`<div class="flav" style="margin-top:6px;">Consejo: ${f.style}</div>`;
+  showCard('gold',cap(p.name)+' — '+f.epithet,intro?'Tu pueblo para esta partida':'Hoja de facción',h+btn(intro?'EMPEZAR':'CERRAR','closeModal()'),{dismissible:true});
+}
+
+// ===================== HELPERS UI =====================
+function refreshTop(){
+  const p=S.players[S.turn];
+  document.getElementById('facdot').style.background=p.color;
+  document.getElementById('facname').textContent=cap(p.name)+(S.ai[p.id]?' (IA)':'');
+  document.getElementById('roundinfo').innerHTML=`Ronda ${S.round}/${CFG.maxRounds}<br>${countTerr(p.id)} territorios`;
+  document.getElementById('r-rec').textContent=p.rec; document.getElementById('r-fe').textContent=p.fe;
+  document.getElementById('r-con').textContent=p.con; document.getElementById('r-pv').textContent=score(p);
+  for(let i=0;i<3;i++)document.getElementById('ad'+i).classList.toggle('on',i<S.actionsLeft);
+  const em=document.getElementById('elias-mini'); em.textContent='Elías '+S.elias+'/13 · '+bandName(S.elias); em.style.background=bandColor(S.elias);
+}
+function btn(label,call){ return `<button class="bigbtn gold" onclick="${call}">${label}</button>`; }
+function showCard(cls,title,sub,bodyHtml,opt){ opt=opt||{};
+  const m=document.getElementById('modal'); m.classList.remove('hidden');
+  let body=bodyHtml; if(!/<button/.test(body))body+=btn('CERRAR','closeModal()');
+  m.innerHTML=`<div class="card ${cls}" onclick="event.stopPropagation()"><div class="ch"><h3>${title}</h3><div class="sub">${sub}</div></div><div class="cb">${body}</div></div>`;
+  m.onclick=opt.dismissible?()=>closeModal():null;
+}
+function modalChoice(title,sub,opts,dismissible){
+  let b=''; opts.forEach((o,i)=>{const dis=o.en===false; b+=`<button class="optbtn ${dis?'optdis':''}" data-i="${i}">${o.label}</button>`;});
+  if(dismissible!==false) b+=`<button class="ghostbtn" onclick="cancelPending();closeModal()">Cancelar</button>`;
+  showCard('gold',title,sub,b,{dismissible:!!dismissible});
+  document.querySelectorAll('#modal .optbtn').forEach((el,i)=>{ if(opts[i].en!==false)el.onclick=opts[i].on; else el.onclick=()=>toast('No disponible.'); });
+}
+function closeModal(){ const m=document.getElementById('modal'); m.classList.add('hidden'); m.innerHTML=''; m.onclick=null; }
+function renderLog(){ const l=document.getElementById('log'); if(l)l.innerHTML=(S.log||[]).slice(0,50).map(e=>`<div class="e">${e}</div>`).join(''); }
+function toggleLog(){ document.getElementById('log').classList.toggle('open'); }
+function toast(msg){ const t=document.createElement('div'); t.textContent=msg;
+  t.style.cssText='position:fixed;left:50%;top:120px;transform:translateX(-50%);background:#1c1408;color:#F0D080;padding:9px 16px;border-radius:20px;font-size:13px;z-index:90;box-shadow:0 3px 12px rgba(0,0,0,.5);border:1px solid #C9A84C;max-width:90%;text-align:center;';
+  document.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .4s';t.style.opacity='0';setTimeout(()=>t.remove(),400);},1800); }
+
+// ===================== AUTO-PLAYTEST =====================
+function openPlaytest(){
+  showCard('gold','Auto-playtest','Mide el balance con IA contra IA',
+    `<div class="infoline">Simula partidas con la IA en las tres mesas: <b>6 jugadores</b> (todas las facciones) y <b>4-5 jugadores</b> (facciones al azar en cada partida, como en la mesa real). Mide el % de victorias de cada facción sobre las partidas que jugó.</div>
+     <button class="optbtn" onclick="runPlaytest(100)"><b>100 partidas</b> por mesa · rápido</button>
+     <button class="optbtn" onclick="runPlaytest(400)"><b>400 partidas</b> por mesa · ~10 s</button>
+     <div class="flav">Sirve para detectar facciones fuera de rango, no para predecir el % con humanos.</div>`,{dismissible:true});
+}
+function runPlaytest(n){
+  const res={}, cfgs=[4,5,6];
+  const step=i=>{
+    if(i>=cfgs.length){ showPlaytest(res,n); return; }
+    showCard('gold','Simulando…',`${n} partidas por mesa`,`<div class="infoline">Mesa de ${cfgs[i]} jugadores (${i+1}/3)…</div><button class="ghostbtn" style="display:none"></button>`,{chain:true});
+    setTimeout(()=>{ const nj=cfgs[i]; res[nj]=simulateGames(n,nj,nj<6?'random':null); step(i+1); },40);
+  };
+  step(0);
+}
+function showPlaytest(res,n){
+  const facs=D.factions.map(f=>f.name);
+  let h=`<table style="width:100%;border-collapse:collapse;font-size:12px;"><tr><th style="text-align:left;">Facción</th>${[4,5,6].map(j=>`<th>${j}J<br><span class="flav">ideal ${(100/j).toFixed(0)}%</span></th>`).join('')}</tr>`;
+  facs.forEach(f=>{ const col=D.factions.find(x=>x.name===f).color;
+    h+=`<tr style="border-top:1px dotted #cdbb8c;"><td><b style="color:${col}">${cap(f)}</b></td>`+[4,5,6].map(j=>{ const v=res[j].pct[f], id=100/j, dv=v-id;
+      const c=Math.abs(dv)>=id*0.4?'#8B1A1A':Math.abs(dv)>=id*0.2?'#b5762e':'#3E7C47';
+      return `<td style="text-align:center;"><b style="color:${c}">${v.toFixed(1)}%</b></td>`; }).join('')+'</tr>'; });
+  h+=`<tr style="border-top:1.5px solid #8B6914;"><td>Dispersión</td>`+[4,5,6].map(j=>{ const v=Object.values(res[j].pct); return `<td style="text-align:center;">${(Math.max(...v)-Math.min(...v)).toFixed(1)} pp</td>`; }).join('')+'</tr>';
+  h+=`<tr><td>Rondas</td>`+[4,5,6].map(j=>`<td style="text-align:center;">${res[j].avgRounds}</td>`).join('')+'</tr>';
+  h+=`<tr><td>Horeb</td>`+[4,5,6].map(j=>`<td style="text-align:center;">${(100*res[j].horeb/res[j].nGames).toFixed(0)}%</td>`).join('')+'</tr></table>';
+  h+=`<div class="flav" style="margin-top:6px;">Verde: a menos de un 20% del ideal · ámbar: 20-40% · rojo: más del 40%. Con ${n} partidas el margen de ruido es de ±${(196*Math.sqrt(0.2*0.8/(n*0.75))).toFixed(0)} puntos por facción: no ajustes por diferencias menores.</div>`;
+  h+=`<div class="flav">La IA no negocia, no farolea y no usa bien el Movimiento Costero: el juego humano se desvía de estas cifras.</div>`;
+  showCard('gold','Resultado del playtest',`${n} partidas por mesa`,h+btn('CERRAR','closeModal()'),{dismissible:true});
+}
+
+</script></body></html>
